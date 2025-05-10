@@ -32,7 +32,7 @@ A lightweight, Flask-based media gallery server designed for browsing and viewin
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/py-home-gallery.git
+   git clone https://github.com/guinetik/py-home-gallery.git
    cd py-home-gallery
    ```
 
