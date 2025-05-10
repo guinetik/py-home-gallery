@@ -6,7 +6,7 @@ for both image and video files.
 """
 
 import os
-from moviepy import VideoFileClip
+from moviepy.editor import VideoFileClip
 from PIL import Image
 
 
