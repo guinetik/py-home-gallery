@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Gallery</title>
+    <script src="https://cdn.jsdelivr.net/npm/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #121212;
+            color: #ffffff;
+        }
+        nav {
+			position: fixed;
+			top: 0;
+			width: 100%;
+			background: linear-gradient(45deg, #00c6ff, #0072ff);
+			color: white;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 10px 10px 10px 0px; /* Adjusted padding for spacing */
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+			z-index: 1000;
+		}
+
+		nav .logo {
+			display: flex;
+			align-items: center;
+		}
+
+		nav .logo img {
+			height: 40px;
+			margin-right: 10px;
+		}
+
+		nav .filter-buttons {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+		}
+
+		nav button, nav select {
+			padding: 8px 15px;
+			font-size: 1rem;
+			border: none;
+			border-radius: 8px;
+			background: #ffffff;
+			color: #0072ff;
+			cursor: pointer;
+			transition: transform 0.3s, box-shadow 0.3s;
+		}
+		
+		nav select {
+		background: cyan;
+		}
+
+		/* Hover effect for buttons and dropdown */
+		nav button:hover, nav select:hover {
+			transform: scale(1.1);
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+		}
+
+		nav select {
+			appearance: none; /* Remove default dropdown styling */
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			background-image: linear-gradient(45deg, #00c6ff, #0072ff); /* Match button gradient */
+			background-clip: padding-box;
+			color: white;
+			text-align: center;
+			font-weight: bold;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+			outline: none;
+		}
+
+		/* Adjust dropdown arrow */
+		nav select:focus {
+			box-shadow: 0 0 0 3px rgba(0, 198, 255, 0.5);
+		}
+
+        .grid {
+            margin-top: 80px; /* Spacing for fixed navbar */
+        }
+        
+        /* Important grid styling - unchanged from original */
+        .grid-sizer,
+        .grid-item {
+            width: 33.333%;
+        }
+        
+        .grid-item {
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        
+        .grid-item img {
+            display: block;
+            width: 100%;
+            border-radius: 5px;
+        }
+        
+		.pagination {
+            margin: 20px;
+            text-align: center;
+        }
+        .pagination a {
+            display: inline-block;
+            margin: 0 5px;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #ffffff;
+            background: linear-gradient(45deg, #ff5722, #e91e63);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 1.2rem;
+        }
+        .pagination a:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+        .pagination a.active {
+            font-weight: bold;
+            background: #4caf50;
+            color: #ffffff;
+        }
+        
+        /* Media type indicators - subtle differences */
+        .video-item img {
+            border-bottom: 3px solid #FF5722;
+        }
+        .image-item img {
+            border-bottom: 3px solid #4CAF50;
+        }
+        
+        /* Filter buttons styling */
+        .filter-btn {
+            text-decoration: none;
+        }
+        .filter-btn button {
+            width: 100%;
+        }
+        .filter-active {
+            background: #ff5722 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" style="margin-left:1em">
+			<div class="logo">
+				<img src="https://via.placeholder.com/40" alt="Logo">
+				<span>Media Gallery</span>
+			</div>
+		</a>
+        <div class="filter-buttons">
+			<a href="{{ request.path }}?{% if current_folder %}folder={{ current_folder }}&{% endif %}display=all" class="filter-btn">
+                <button class="{% if not media_type or media_type == 'all' %}filter-active{% endif %}">
+                    All ({{ total_count }})
+                </button>
+            </a>
+			<a href="{{ request.path }}?{% if current_folder %}folder={{ current_folder }}&{% endif %}display=videos" class="filter-btn">
+                <button class="{% if media_type == 'videos' %}filter-active{% endif %}">
+                    Videos ({{ video_count }})
+                </button>
+            </a>
+			<a href="{{ request.path }}?{% if current_folder %}folder={{ current_folder }}&{% endif %}display=images" class="filter-btn">
+                <button class="{% if media_type == 'images' %}filter-active{% endif %}">
+                    Images ({{ image_count }})
+                </button>
+            </a>
+			<select id="folder-dropdown" onchange="navigateToFolder(this.value)">
+				<option value="">All Folders</option>
+				{% for folder in folders %}
+				<option value="{{ folder }}" {% if folder == current_folder %}selected{% endif %}>
+					{{ folder }}
+				</option>
+				{% endfor %}
+			</select>
+		</div>
+	<script>
+		function navigateToFolder(folder) {
+            const params = new URLSearchParams(window.location.search);
+            
+            // Preserve the display parameter if it exists
+            const display = params.get('display');
+
+            // Reset parameters
+            params.delete('folder');
+            params.delete('page');
+            params.delete('display');
+            
+            // Add folder parameter if selected
+            if (folder) {
+                params.set('folder', folder);
+            }
+            
+            // Restore display parameter if it was set
+            if (display) {
+                params.set('display', display);
+            }
+
+            // Navigate to the new URL
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+	</script>
+    </nav>
+    
+    <div class="grid">
+        <div class="grid-sizer"></div>
+        {% for media, thumbnail in media_files %}
+            {% if media.endswith('.mp4') or media.endswith('.mov') or media.endswith('.avi') or media.endswith('.mkv') %}
+                <div class="grid-item video-item">
+                    <a href="/media/{{ media }}" class="glightbox" data-gallery="gallery" data-type="video">
+                        <img src="{{ thumbnail if thumbnail else placeholder }}" alt="Video Thumbnail">
+                    </a>
+                </div>
+            {% else %}
+                <div class="grid-item image-item">
+                    <a href="/media/{{ media }}" class="glightbox" data-gallery="gallery">
+                        <img src="{{ thumbnail }}" alt="Image">
+                    </a>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+	<div class="pagination">
+		{% if page > 1 %}
+			<a href="{{ request.path }}?page={{ page - 1 }}{% if current_folder %}&folder={{ current_folder }}{% endif %}{% if media_type %}&display={{ media_type }}{% endif %}">Previous</a>
+		{% endif %}
+		{% for p in range(page - 2, page + 3) if 1 <= p <= total_pages %}
+			<a href="{{ request.path }}?page={{ p }}{% if current_folder %}&folder={{ current_folder }}{% endif %}{% if media_type %}&display={{ media_type }}{% endif %}"
+			   {% if p == page %}class="active"{% endif %}>
+			   {{ p }}
+			</a>
+		{% endfor %}
+		{% if page < total_pages %}
+			<a href="{{ request.path }}?page={{ page + 1 }}{% if current_folder %}&folder={{ current_folder }}{% endif %}{% if media_type %}&display={{ media_type }}{% endif %}">Next</a>
+		{% endif %}
+	</div>
+
+    <script>
+        // Initialize Isotope with imagesLoaded for proper layout
+        var grid = document.querySelector('.grid');
+        
+        // Use imagesLoaded to wait for all images to load before initializing Isotope
+        imagesLoaded(grid, function() {
+            // Initialize Isotope with the right options
+            new Isotope(grid, {
+                // Select items
+                itemSelector: '.grid-item',
+                // Use percentage positioning
+                percentPosition: true,
+                // Use masonry layout mode
+                layoutMode: 'masonry',
+                // Define columnWidth via the grid-sizer element
+                masonry: {
+                    columnWidth: '.grid-sizer'
+                }
+            });
+            
+            console.log('Isotope initialized successfully');
+        });
+        
+        // Initialize GLightbox
+        const lightbox = GLightbox({
+            selector: '.glightbox',
+            touchNavigation: true,
+            loop: true,
+            autoplayVideos: true
+        });
+    </script>
+</body>
+</html>

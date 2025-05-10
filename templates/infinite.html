@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Gallery (Infinite Scroll)</title>
+    <script src="https://cdn.jsdelivr.net/npm/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #121212;
+            color: #ffffff;
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 10px 10px 0px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+        nav .logo {
+            display: flex;
+            align-items: center;
+        }
+        nav .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        nav .filter-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        nav a {
+            text-decoration: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        nav a:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .grid {
+            margin-top: 80px;
+        }
+        .grid:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        .grid-sizer,
+        .grid-item {
+            width: 33.333%;
+        }
+        .grid-item {
+            float: left;
+            overflow: hidden;
+        }
+        .grid-item img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.5rem;
+            color: #00c6ff;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" style="margin-left: 1em;">
+            <div class="logo">
+                <img src="https://via.placeholder.com/40" alt="Logo">
+                <span>Media Gallery (Infinite Scroll)</span>
+            </div>
+        </a>
+        <div class="filter-buttons">
+            <a href="/" style="color: white;">Back to Home</a>
+        </div>
+    </nav>
+    <div class="grid">
+        <div class="grid-sizer"></div>
+        {% for media, thumbnail in media_files %}
+            <div class="grid-item {{ 'video' if media.endswith('.mp4') else 'image' }}">
+                <a href="/media/{{ media }}" class="glightbox" data-gallery="gallery">
+                    <img src="{{ thumbnail }}" alt="Media Thumbnail">
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="loading" id="loading">Loading...</div>
+    <script>
+        // Initialize Isotope after images have loaded
+        var grid = document.querySelector('.grid');
+        var iso;
+
+        imagesLoaded(grid, function () {
+            iso = new Isotope(grid, {
+                itemSelector: '.grid-item',
+                percentPosition: true,
+                masonry: {
+                    columnWidth: '.grid-sizer'
+                }
+            });
+        });
+
+        // Initialize GLightbox
+        let lightbox = GLightbox({
+            selector: '.glightbox',
+            touchNavigation: true,
+            loop: true,
+        });
+
+        // Infinite scroll implementation
+        let currentPage = 1;
+        let isLoading = false;
+
+        const loadMoreItems = async () => {
+			if (isLoading) return;
+
+			isLoading = true;
+			document.getElementById('loading').style.display = 'block';
+
+			try {
+				const response = await fetch(`/gallery-data?page=${currentPage + 1}&sort=new`);
+				const data = await response.json();
+
+				data.media.forEach(item => {
+					const itemDiv = document.createElement('div');
+					itemDiv.className = `grid-item ${item.path.endsWith('.mp4') ? 'video' : 'image'}`;
+					itemDiv.innerHTML = `
+						<a href="/media/${item.path}" class="glightbox" data-gallery="gallery">
+							<img src="${item.thumbnail}" alt="Media Thumbnail">
+						</a>`;
+					grid.appendChild(itemDiv);
+				});
+
+				imagesLoaded(grid, () => {
+					iso.appended(grid.querySelectorAll('.grid-item'));
+					iso.layout();
+				});
+
+				// Reinitialize GLightbox for new items
+				lightbox = GLightbox({
+					selector: '.glightbox',
+					touchNavigation: true,
+					loop: true,
+				});
+
+				currentPage++;
+				if (!data.has_next) {
+					document.getElementById('loading').style.display = 'none';
+				}
+			} catch (error) {
+				console.error('Error loading more items:', error);
+			} finally {
+				isLoading = false;
+			}
+		};
+
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+                loadMoreItems();
+            }
+        });
+    </script>
+</body>
+</html>
