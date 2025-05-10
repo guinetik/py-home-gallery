@@ -17,9 +17,14 @@ A lightweight, Flask-based media gallery server designed for browsing and viewin
 - **Lightbox Viewer**: Full-screen viewing for both images and videos
 - **Network Accessible**: Access your media from any device on your home network
 
+## Demo
+
+![Demo](./screenshots/demo.gif)
 ## Screenshots
 
-(Screenshots to be added)
+![Screenshot 1](./screenshots/screenshot1.png)
+![Screenshot 2](./screenshots/screenshot2.png)
+![Screenshot 3](./screenshots/screenshot3.png)
 
 ## Installation
 
@@ -44,13 +49,13 @@ A lightweight, Flask-based media gallery server designed for browsing and viewin
 3. Run the application with your media directory:
    ```bash
    # Basic usage with just the media directory
-   python gallery.py --media-dir "/path/to/your/media"
+   python run.py --media-dir "/path/to/your/media"
    
    # Specify a custom thumbnail directory
-   python gallery.py --media-dir "/path/to/your/media" --thumbnail-dir "/custom/path/for/thumbnails"
+   python run.py --media-dir "/path/to/your/media" --thumbnail-dir "/custom/path/for/thumbnails"
    
    # Example with all options
-   python gallery.py --media-dir "/home/guinetik/Media" --thumbnail-dir "/home/guinetik/gallery-thumbs" --port 8080 --items-per-page 100
+   python run.py --media-dir "/home/guinetik/Media" --thumbnail-dir "/home/guinetik/gallery-thumbs" --port 8080 --items-per-page 100
    ```
 
 4. The application will automatically create a thumbnail directory in your home folder:
@@ -136,37 +141,37 @@ export PY_HOME_GALLERY_PORT="8080"
 ### Basic Usage (Windows - CMD)
 Start the server with the default settings but point to your media directory:
 ```cmd
-python gallery.py --media-dir "%USERPROFILE%\Media"
+python run.py --media-dir "%USERPROFILE%\Media"
 ```
 
 ### Basic Usage (Windows - PowerShell)
 Start the server with the default settings but point to your media directory:
 ```powershell
-python gallery.py --media-dir "$env:USERPROFILE\Media"
+python run.py --media-dir "$env:USERPROFILE\Media"
 ```
 
 ### Change Server Port (Windows - CMD)
 Run on a different port (useful if port 8000 is already in use):
 ```cmd
-python gallery.py --media-dir "%USERPROFILE%\Media" --port 8080
+python run.py --media-dir "%USERPROFILE%\Media" --port 8080
 ```
 
 ### Change Server Port (Windows - PowerShell)
 Run on a different port (useful if port 8000 is already in use):
 ```powershell
-python gallery.py --media-dir "$env:USERPROFILE\Media" --port 8080
+python run.py --media-dir "$env:USERPROFILE\Media" --port 8080
 ```
 
 ### Specify Thumbnail Location (Windows - CMD)
 Store thumbnails in a custom location:
 ```cmd
-python gallery.py --media-dir "%USERPROFILE%\Media" --thumbnail-dir "D:\thumbnails"
+python run.py --media-dir "%USERPROFILE%\Media" --thumbnail-dir "D:\thumbnails"
 ```
 
 ### Specify Thumbnail Location (Windows - PowerShell)
 Store thumbnails in a custom location:
 ```powershell
-python gallery.py --media-dir "$env:USERPROFILE\Media" --thumbnail-dir "D:/thumbnails"
+python run.py --media-dir "$env:USERPROFILE\Media" --thumbnail-dir "D:/thumbnails"
 ```
 
 ### Using Environment Variables (Windows - CMD)
@@ -177,7 +182,7 @@ SET PY_HOME_GALLERY_MEDIA_DIR=%USERPROFILE%\Media
 SET PY_HOME_GALLERY_PORT=8080
 
 :: Then run without command-line arguments
-python gallery.py
+python run.py
 ```
 
 ### Using Environment Variables (Windows - PowerShell)
@@ -188,47 +193,47 @@ $env:PY_HOME_GALLERY_MEDIA_DIR = "$env:USERPROFILE\Media"
 $env:PY_HOME_GALLERY_PORT = "8080"
 
 # Then run without command-line arguments
-python gallery.py
+python run.py
 ```
 
 ### Multiple-Instance Setup (Windows - CMD)
 Run multiple instances for different media collections:
 ```cmd
 :: Run first instance for photos
-python gallery.py --media-dir "%USERPROFILE%\Pictures" --port 8000
+python run.py --media-dir "%USERPROFILE%\Pictures" --port 8000
 
 :: Run second instance for videos on a different port
-python gallery.py --media-dir "%USERPROFILE%\Videos" --port 8001
+python run.py --media-dir "%USERPROFILE%\Videos" --port 8001
 ```
 
 ### Multiple-Instance Setup (Windows - PowerShell)
 Run multiple instances for different media collections:
 ```powershell
 # Run first instance for photos
-python gallery.py --media-dir "$env:USERPROFILE\Pictures" --port 8000
+python run.py --media-dir "$env:USERPROFILE\Pictures" --port 8000
 
 # Run second instance for videos on a different port
-python gallery.py --media-dir "$env:USERPROFILE\Videos" --port 8001
+python run.py --media-dir "$env:USERPROFILE\Videos" --port 8001
 ```
 
 ### Basic Usage (Linux/macOS)
 Start the server with the default settings but point to your media directory:
 ```bash
-python gallery.py --media-dir "/home/guinetik/Media"
+python run.py --media-dir "/home/guinetik/Media"
 # OR using home directory shorthand
-python gallery.py --media-dir "~/Media"
+python run.py --media-dir "~/Media"
 ```
 
 ### Change Server Port (Linux/macOS)
 Run on a different port (useful if port 8000 is already in use):
 ```bash
-python gallery.py --media-dir "~/Media" --port 8080
+python run.py --media-dir "~/Media" --port 8080
 ```
 
 ### Specify Thumbnail Location (Linux/macOS)
 Store thumbnails in a custom location:
 ```bash
-python gallery.py --media-dir "~/Media" --thumbnail-dir "/mnt/external/thumbnails"
+python run.py --media-dir "~/Media" --thumbnail-dir "/mnt/external/thumbnails"
 ```
 
 ### Using Environment Variables (Linux/macOS)
@@ -239,17 +244,17 @@ export PY_HOME_GALLERY_MEDIA_DIR="$HOME/Media"
 export PY_HOME_GALLERY_PORT="8080"
 
 # Then run without command-line arguments
-python gallery.py
+python run.py
 ```
 
 ### Multiple-Instance Setup (Linux/macOS)
 Run multiple instances for different media collections:
 ```bash
 # Run first instance for photos
-python gallery.py --media-dir "~/Photos" --port 8000
+python run.py --media-dir "~/Photos" --port 8000
 
 # Run second instance for videos on a different port
-python gallery.py --media-dir "~/Videos" --port 8001
+python run.py --media-dir "~/Videos" --port 8001
 ```
 
 ### Notes on Windows Path Syntax
@@ -258,18 +263,18 @@ On Windows, path handling differs between Command Prompt (CMD) and PowerShell:
 
 #### Command Prompt (CMD)
 
-1. Use environment variables with percent signs: `python gallery.py --media-dir "%USERPROFILE%\Media"`
-2. Escape backslashes by doubling them: `python gallery.py --media-dir "C:\Users\guinetik\Media"`
-3. Or use forward slashes: `python gallery.py --media-dir "C:/Users/guinetik/Media"`
+1. Use environment variables with percent signs: `python run.py --media-dir "%USERPROFILE%\Media"`
+2. Escape backslashes by doubling them: `python run.py --media-dir "C:\Users\guinetik\Media"`
+3. Or use forward slashes: `python run.py --media-dir "C:/Users/guinetik/Media"`
 
 #### PowerShell
 
-1. Use environment variables with `$env:`: `python gallery.py --media-dir "$env:USERPROFILE\Media"`
-2. Use forward slashes to avoid escape issues: `python gallery.py --media-dir "C:/Users/guinetik/Media"`
+1. Use environment variables with `$env:`: `python run.py --media-dir "$env:USERPROFILE\Media"`
+2. Use forward slashes to avoid escape issues: `python run.py --media-dir "C:/Users/guinetik/Media"`
 3. Or use the `-f` string formatting to handle backslashes properly: 
    ```powershell
    $mediaDir = "{0}\Media" -f $env:USERPROFILE
-   python gallery.py --media-dir "$mediaDir"
+   python run.py --media-dir "$mediaDir"
    ```
 
 The tilde (`~`) shorthand for home directory doesn't work in Windows terminals. Use `%USERPROFILE%` (CMD) or `$env:USERPROFILE` (PowerShell) instead.
