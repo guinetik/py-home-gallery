@@ -19,7 +19,10 @@ A lightweight, Flask-based media gallery server designed for browsing and viewin
 
 ## Demo
 
+Demo is on [https://py-home-gallery.onrender.com/](https://py-home-gallery.onrender.com/) but its on the free plan so it may take a while to load. See a gif of the demo below:
+
 ![Demo](./demo.gif)
+
 ## Screenshots
 
 ![Screenshot 1](./screenshot_1.png)
