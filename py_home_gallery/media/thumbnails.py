@@ -6,9 +6,19 @@ for both image and video files.
 """
 
 import os
-from moviepy.editor import VideoFileClip
 from PIL import Image
-
+try:
+    # Try the newer style import (may work on newer versions)
+    from moviepy.editor import VideoFileClip
+    print("Using moviepy.editor import")
+except ImportError:
+    try:
+        # Try the older/alternative style import
+        from moviepy import VideoFileClip
+        print("Using direct moviepy import")
+    except ImportError:
+        # Neither import style worked
+        raise ImportError("Failed to import VideoFileClip. Please install moviepy: pip install moviepy>=1.0.0")
 
 def generate_video_thumbnail(video_path, thumbnail_path, width=300, height=200):
     """
