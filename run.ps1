@@ -1,0 +1,1 @@
+python run.py --media-dir "$env:USERPROFILE/Media" --thumbnail-dir "$env:USERPROFILE/MediaThumbnails"
