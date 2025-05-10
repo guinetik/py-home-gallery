@@ -8,6 +8,8 @@
     <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    
+    <!-- We'll keep all original styling inline for now to ensure it works -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -89,13 +91,19 @@
             margin-top: 80px; /* Spacing for fixed navbar */
         }
         
-        /* Important grid styling - unchanged from original */
+        .grid:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+        
         .grid-sizer,
         .grid-item {
             width: 33.333%;
         }
         
         .grid-item {
+            float: left;
             padding: 5px;
             box-sizing: border-box;
         }
@@ -157,7 +165,7 @@
     <nav>
         <a href="/" style="margin-left:1em">
 			<div class="logo">
-				<img src="https://via.placeholder.com/40" alt="Logo">
+				<img src="/static/logo.svg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'; this.onerror='';">
 				<span>Media Gallery</span>
 			</div>
 		</a>
@@ -249,34 +257,40 @@
 	</div>
 
     <script>
-        // Initialize Isotope with imagesLoaded for proper layout
-        var grid = document.querySelector('.grid');
-        
-        // Use imagesLoaded to wait for all images to load before initializing Isotope
-        imagesLoaded(grid, function() {
-            // Initialize Isotope with the right options
-            new Isotope(grid, {
-                // Select items
-                itemSelector: '.grid-item',
-                // Use percentage positioning
-                percentPosition: true,
-                // Use masonry layout mode
-                layoutMode: 'masonry',
-                // Define columnWidth via the grid-sizer element
-                masonry: {
-                    columnWidth: '.grid-sizer'
-                }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize variables
+            var grid = document.querySelector('.grid');
+            var iso;
+            
+            // Initialize Isotope after images are loaded
+            imagesLoaded(grid, function() {
+                console.log('Images loaded, initializing Isotope');
+                
+                // Initialize Isotope
+                iso = new Isotope(grid, {
+                    itemSelector: '.grid-item',
+                    percentPosition: true,
+                    masonry: {
+                        columnWidth: '.grid-sizer'
+                    }
+                });
+                
+                console.log('Isotope initialized successfully');
+                
+                // Force a layout after a short delay
+                setTimeout(function() {
+                    console.log('Forcing relayout');
+                    iso.layout();
+                }, 500);
             });
             
-            console.log('Isotope initialized successfully');
-        });
-        
-        // Initialize GLightbox
-        const lightbox = GLightbox({
-            selector: '.glightbox',
-            touchNavigation: true,
-            loop: true,
-            autoplayVideos: true
+            // Initialize GLightbox
+            const lightbox = GLightbox({
+                selector: '.glightbox',
+                touchNavigation: true,
+                loop: true,
+                autoplayVideos: true
+            });
         });
     </script>
 </body>

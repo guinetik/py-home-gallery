@@ -1,0 +1,189 @@
+/* 
+   Main stylesheet for Py Home Gallery 
+   This file demonstrates static file serving
+*/
+
+:root {
+  --primary-color: #0072ff;
+  --secondary-color: #00c6ff;
+  --accent-color: #ff5722;
+  --text-color: #ffffff;
+  --background-color: #121212;
+  --card-background: #1e1e1e;
+  --success-color: #4CAF50;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Navigation Bar */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 10px 10px 0px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+nav .logo {
+  display: flex;
+  align-items: center;
+  margin-left: 1em;
+}
+
+nav .logo img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+nav .filter-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+nav button, nav select {
+  padding: 8px 15px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--primary-color);
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+nav button:hover, nav select:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+nav select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+  background-clip: padding-box;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+/* Grid Layout */
+.grid {
+  margin-top: 80px;
+  padding: 0 10px;
+}
+
+.grid:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.grid-sizer,
+.grid-item {
+  width: 33.333%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.grid-item {
+  float: left;
+  overflow: hidden;
+}
+
+.grid-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.grid-item:hover img {
+  transform: scale(1.03);
+}
+
+/* Media type indicators */
+.video-item img {
+  border-bottom: 3px solid var(--accent-color);
+}
+
+.image-item img {
+  border-bottom: 3px solid var(--success-color);
+}
+
+/* Pagination */
+.pagination {
+  margin: 20px;
+  text-align: center;
+}
+
+.pagination a {
+  display: inline-block;
+  margin: 0 5px;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: var(--text-color);
+  background: linear-gradient(45deg, #ff5722, #e91e63);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 1.2rem;
+}
+
+.pagination a:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.pagination a.active {
+  font-weight: bold;
+  background: var(--success-color);
+  color: var(--text-color);
+}
+
+/* Filter button styling */
+.filter-btn {
+  text-decoration: none;
+}
+
+.filter-active {
+  background: var(--accent-color) !important;
+  color: white !important;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 992px) {
+  .grid-sizer,
+  .grid-item {
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .grid-sizer,
+  .grid-item {
+    width: 100%;
+  }
+  
+  nav .filter-buttons {
+    flex-wrap: wrap;
+  }
+}
