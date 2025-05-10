@@ -20,7 +20,7 @@ class Config:
         self.thumbnail_dir = os.environ.get('PY_HOME_GALLERY_THUMB_DIR', self.thumbnail_dir)
         self.items_per_page = int(os.environ.get('PY_HOME_GALLERY_ITEMS_PER_PAGE', '50'))
         self.host = os.environ.get('PY_HOME_GALLERY_HOST', '0.0.0.0')
-        self.port = int(os.environ.get('PY_HOME_GALLERY_PORT', '8000'))
+        self.port = int(os.environ.get('PY_HOME_GALLERY_PORT') or os.environ.get('PORT', '8000'))
         self.placeholder_url = os.environ.get('PY_HOME_GALLERY_PLACEHOLDER', 'https://via.placeholder.com/300x200')
         self.skip_ffmpeg_check = False
         
