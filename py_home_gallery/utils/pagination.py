@@ -5,8 +5,12 @@ This module contains utility functions for handling pagination
 in gallery views.
 """
 
+from typing import List, Tuple, TypeVar, Dict, Optional
 
-def paginate_items(items, page, items_per_page):
+T = TypeVar('T')
+
+
+def paginate_items(items: List[T], page: int, items_per_page: int) -> Tuple[List[T], int]:
     """
     Paginate a list of items.
     
@@ -24,7 +28,7 @@ def paginate_items(items, page, items_per_page):
     return items[start:end], total_pages
 
 
-def get_pagination_info(total_items, page, items_per_page):
+def get_pagination_info(total_items: int, page: int, items_per_page: int) -> Dict[str, Optional[int]]:
     """
     Get pagination information.
     
@@ -34,7 +38,15 @@ def get_pagination_info(total_items, page, items_per_page):
         items_per_page: Number of items per page
         
     Returns:
-        dict: Pagination information
+        dict: Pagination information containing:
+            - total_items: Total number of items
+            - total_pages: Total number of pages
+            - page: Current page number
+            - items_per_page: Items per page
+            - has_prev: Whether there is a previous page
+            - has_next: Whether there is a next page
+            - prev_page: Previous page number (or None)
+            - next_page: Next page number (or None)
     """
     total_pages = (total_items + items_per_page - 1) // items_per_page
     has_prev = page > 1

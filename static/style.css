@@ -1,92 +1,281 @@
 /* 
-   Main stylesheet for Py Home Gallery 
-   This file demonstrates static file serving
-*/
+ * Py Home Gallery - Apple Glassmorphism Dark Mode
+ * Inspired by macOS Big Sur and iOS design language
+ */
 
+/* ==================== CSS Variables ==================== */
 :root {
-  --primary-color: #0072ff;
-  --secondary-color: #00c6ff;
-  --accent-color: #ff5722;
-  --text-color: #ffffff;
-  --background-color: #121212;
-  --card-background: #1e1e1e;
-  --success-color: #4CAF50;
+  /* Apple-inspired Colors */
+  --primary: rgba(10, 132, 255, 1);       /* Apple Blue */
+  --primary-light: rgba(64, 156, 255, 1);
+  --accent: rgba(255, 55, 95, 1);         /* Apple Pink/Red */
+  --success: rgba(52, 199, 89, 1);        /* Apple Green */
+  --warning: rgba(255, 159, 10, 1);       /* Apple Orange */
+  
+  /* Backgrounds - Dark Mode */
+  --bg-primary: rgba(0, 0, 0, 0.85);
+  --bg-secondary: rgba(28, 28, 30, 0.85);
+  --bg-tertiary: rgba(44, 44, 46, 0.85);
+  
+  /* Glass Effects */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.3);
+  
+  /* Text */
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Border radius - Apple style */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  
+  /* Transitions - Apple-like smooth */
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==================== Base Styles ==================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
-  background: var(--background-color);
-  color: var(--text-color);
-  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 
+               'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #000000;
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow-x: hidden;
 }
 
-/* Navigation Bar */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+a:hover {
+  color: var(--primary-light);
+}
+
+/* ==================== Navigation Bar ==================== */
 nav {
   position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
-  background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
-  color: white;
+  background: var(--glass-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--text-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 10px 10px 0px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  padding: var(--spacing-md) var(--spacing-xl);
   z-index: 1000;
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 nav .logo {
   display: flex;
   align-items: center;
-  margin-left: 1em;
+  gap: var(--spacing-md);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: opacity var(--transition);
+}
+
+nav .logo:hover {
+  opacity: 0.8;
 }
 
 nav .logo img {
-  height: 40px;
-  margin-right: 10px;
+  height: 32px;
+  width: auto;
+  transition: transform var(--transition);
+}
+
+nav .logo:hover img {
+  transform: scale(1.05);
 }
 
 nav .filter-buttons {
   display: flex;
-  gap: 10px;
+  gap: var(--spacing-sm);
   align-items: center;
+  flex-wrap: wrap;
 }
 
 nav button, nav select {
-  padding: 8px 15px;
-  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   border: none;
-  border-radius: 8px;
-  background: #ffffff;
-  color: var(--primary-color);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: all var(--transition);
+  position: relative;
 }
 
 nav button:hover, nav select:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+nav button:active, nav select:active {
+  transform: translateY(0);
 }
 
 nav select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
-  background-clip: padding-box;
-  color: white;
-  text-align: center;
-  font-weight: bold;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.7)' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+  min-width: 150px;
 }
 
-/* Grid Layout */
+.filter-active {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: white !important;
+}
+
+/* ==================== Header (Dashboard) ==================== */
+header {
+  background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--text-primary);
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+header h1 {
+  margin: var(--spacing-md) 0 0 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+header .logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin: 0;
+}
+
+/* ==================== Dashboard Buttons ==================== */
+.buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  min-height: calc(100vh - 200px);
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xl);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: white;
+  background: var(--glass-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px var(--glass-shadow);
+  transition: all var(--transition);
+  cursor: pointer;
+  min-width: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  opacity: 0.8;
+  z-index: -1;
+  transition: opacity var(--transition);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.button:hover::before {
+  opacity: 1;
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.button.random::before {
+  background: linear-gradient(135deg, var(--warning), #ff6a00);
+}
+
+.button.newest::before {
+  background: linear-gradient(135deg, var(--accent), #ff2d55);
+}
+
+.button.infinite::before {
+  background: linear-gradient(135deg, #8e2de2, #4a00e0);
+}
+
+/* ==================== Grid Layout - Isotope.js Masonry ==================== */
+/* Isotope handles positioning via JS, CSS only defines widths and styling */
 .grid {
   margin-top: 80px;
-  padding: 0 10px;
+  padding: var(--spacing-md);
+  width: 100%;
+  max-width: 100%;
 }
 
 .grid:after {
@@ -95,95 +284,240 @@ nav select {
   clear: both;
 }
 
+/* Column widths for Isotope masonry - MUST match for proper calculation */
 .grid-sizer,
 .grid-item {
-  width: 33.333%;
-  padding: 5px;
-  box-sizing: border-box;
+  width: 33.333% !important;
 }
 
 .grid-item {
   float: left;
+  padding: 5px;
+}
+
+.grid-item a {
+  display: block;
+  position: relative;
   overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  transition: all var(--transition);
+  /* Aspect ratio container to prevent layout shift */
+  aspect-ratio: 4 / 3;
+}
+
+.grid-item a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 100%);
+  opacity: 0;
+  transition: opacity var(--transition);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.grid-item a:hover::before {
+  opacity: 1;
+}
+
+.grid-item a:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .grid-item img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-slow);
 }
 
-.grid-item:hover img {
-  transform: scale(1.03);
+.grid-item a:hover img {
+  transform: scale(1.05);
 }
 
-/* Media type indicators */
-.video-item img {
-  border-bottom: 3px solid var(--accent-color);
+/* Media type indicators - Apple style */
+.video-item a {
+  border-bottom: 3px solid var(--accent);
 }
 
-.image-item img {
-  border-bottom: 3px solid var(--success-color);
+.video-item a::after {
+  content: '▶';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  color: white;
+  opacity: 0;
+  transition: opacity var(--transition);
+  z-index: 2;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
 }
 
-/* Pagination */
+.video-item a:hover::after {
+  opacity: 0.95;
+}
+
+.image-item a {
+  border-bottom: 3px solid var(--success);
+}
+
+/* ==================== Pagination ==================== */
 .pagination {
-  margin: 20px;
+  margin: var(--spacing-xl) auto;
+  padding: var(--spacing-xl);
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
 }
 
 .pagination a {
-  display: inline-block;
-  margin: 0 5px;
-  padding: 10px 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+  padding: var(--spacing-sm) var(--spacing-md);
   text-decoration: none;
-  color: var(--text-color);
-  background: linear-gradient(45deg, #ff5722, #e91e63);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
-  font-size: 1.2rem;
+  color: var(--text-primary);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition);
+  font-size: 0.9375rem;
+  font-weight: 500;
 }
 
 .pagination a:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 .pagination a.active {
-  font-weight: bold;
-  background: var(--success-color);
-  color: var(--text-color);
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  font-weight: 600;
 }
 
-/* Filter button styling */
-.filter-btn {
-  text-decoration: none;
+/* ==================== Loading State ==================== */
+.loading {
+  text-align: center;
+  padding: var(--spacing-xl);
+  font-size: 1.125rem;
+  color: var(--primary);
+  font-weight: 500;
+  animation: pulse 2s ease-in-out infinite;
 }
 
-.filter-active {
-  background: var(--accent-color) !important;
-  color: white !important;
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
-/* Responsive adjustments */
-@media screen and (max-width: 992px) {
+/* ==================== Responsive Design ==================== */
+@media screen and (max-width: 1200px) {
   .grid-sizer,
   .grid-item {
-    width: 50%;
+    width: 50% !important;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .grid-sizer,
-  .grid-item {
-    width: 100%;
+  nav {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+  
+  nav .logo {
+    font-size: 1rem;
   }
   
   nav .filter-buttons {
-    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  nav button, nav select {
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
+  }
+  
+  .grid {
+    margin-top: 140px;
+  }
+  
+  .grid-sizer,
+  .grid-item {
+    width: 100% !important;
+  }
+  
+  header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .button {
+    font-size: 1rem;
+    padding: 0.875rem 1.5rem;
+    min-width: 150px;
+  }
+  
+  .buttons {
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  nav button, nav select {
+    width: 100%;
+  }
+  
+  .pagination a {
+    min-width: 36px;
+    height: 36px;
+    font-size: 0.875rem;
+  }
+}
+
+/* ==================== Utilities ==================== */
+.filter-btn {
+  text-decoration: none;
+}
+
+/* ==================== Accessibility ==================== */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

@@ -4,162 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media Gallery</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
     <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
-    
-    <!-- We'll keep all original styling inline for now to ensure it works -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #121212;
-            color: #ffffff;
-        }
-        nav {
-			position: fixed;
-			top: 0;
-			width: 100%;
-			background: linear-gradient(45deg, #00c6ff, #0072ff);
-			color: white;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 10px 10px 10px 0px; /* Adjusted padding for spacing */
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-			z-index: 1000;
-		}
-
-		nav .logo {
-			display: flex;
-			align-items: center;
-		}
-
-		nav .logo img {
-			height: 40px;
-			margin-right: 10px;
-		}
-
-		nav .filter-buttons {
-			display: flex;
-			gap: 10px;
-			align-items: center;
-		}
-
-		nav button, nav select {
-			padding: 8px 15px;
-			font-size: 1rem;
-			border: none;
-			border-radius: 8px;
-			background: #ffffff;
-			color: #0072ff;
-			cursor: pointer;
-			transition: transform 0.3s, box-shadow 0.3s;
-		}
-		
-		nav select {
-		background: cyan;
-		}
-
-		/* Hover effect for buttons and dropdown */
-		nav button:hover, nav select:hover {
-			transform: scale(1.1);
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-		}
-
-		nav select {
-			appearance: none; /* Remove default dropdown styling */
-			-webkit-appearance: none;
-			-moz-appearance: none;
-			background-image: linear-gradient(45deg, #00c6ff, #0072ff); /* Match button gradient */
-			background-clip: padding-box;
-			color: white;
-			text-align: center;
-			font-weight: bold;
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-			outline: none;
-		}
-
-		/* Adjust dropdown arrow */
-		nav select:focus {
-			box-shadow: 0 0 0 3px rgba(0, 198, 255, 0.5);
-		}
-
-        .grid {
-            margin-top: 80px; /* Spacing for fixed navbar */
-        }
-        
-        .grid:after {
-            content: '';
-            display: block;
-            clear: both;
-        }
-        
-        .grid-sizer,
-        .grid-item {
-            width: 33.333%;
-        }
-        
-        .grid-item {
-            float: left;
-            padding: 5px;
-            box-sizing: border-box;
-        }
-        
-        .grid-item img {
-            display: block;
-            width: 100%;
-            border-radius: 5px;
-        }
-        
-		.pagination {
-            margin: 20px;
-            text-align: center;
-        }
-        .pagination a {
-            display: inline-block;
-            margin: 0 5px;
-            padding: 10px 15px;
-            text-decoration: none;
-            color: #ffffff;
-            background: linear-gradient(45deg, #ff5722, #e91e63);
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s, box-shadow 0.2s;
-            font-size: 1.2rem;
-        }
-        .pagination a:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
-        }
-        .pagination a.active {
-            font-weight: bold;
-            background: #4caf50;
-            color: #ffffff;
-        }
-        
-        /* Media type indicators - subtle differences */
-        .video-item img {
-            border-bottom: 3px solid #FF5722;
-        }
-        .image-item img {
-            border-bottom: 3px solid #4CAF50;
-        }
-        
-        /* Filter buttons styling */
-        .filter-btn {
-            text-decoration: none;
-        }
-        .filter-btn button {
-            width: 100%;
-        }
-        .filter-active {
-            background: #ff5722 !important;
-            color: white !important;
-        }
-    </style>
 </head>
 <body>
     <nav>
@@ -262,26 +111,28 @@
             var grid = document.querySelector('.grid');
             var iso;
             
-            // Initialize Isotope after images are loaded
+            // Initialize Isotope first (before images load)
+            iso = new Isotope(grid, {
+                itemSelector: '.grid-item',
+                layoutMode: 'masonry',
+                percentPosition: true,
+                masonry: {
+                    columnWidth: '.grid-sizer'
+                }
+            });
+            
+            console.log('Isotope initialized');
+            
+            // Relayout on each image load (progressive loading)
+            imagesLoaded(grid).on('progress', function() {
+                console.log('Image loaded, relaying out');
+                iso.layout();
+            });
+            
+            // Final layout when all images are loaded
             imagesLoaded(grid, function() {
-                console.log('Images loaded, initializing Isotope');
-                
-                // Initialize Isotope
-                iso = new Isotope(grid, {
-                    itemSelector: '.grid-item',
-                    percentPosition: true,
-                    masonry: {
-                        columnWidth: '.grid-sizer'
-                    }
-                });
-                
-                console.log('Isotope initialized successfully');
-                
-                // Force a layout after a short delay
-                setTimeout(function() {
-                    console.log('Forcing relayout');
-                    iso.layout();
-                }, 500);
+                console.log('All images loaded, final layout');
+                iso.layout();
             });
             
             // Initialize GLightbox

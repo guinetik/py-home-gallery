@@ -6,9 +6,10 @@ including file type detection and path handling.
 """
 
 import os
+from typing import Literal
 
 
-def is_image(filename):
+def is_image(filename: str) -> bool:
     """
     Check if a file is an image based on its extension.
     
@@ -21,7 +22,7 @@ def is_image(filename):
     return filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'))
 
 
-def is_video(filename):
+def is_video(filename: str) -> bool:
     """
     Check if a file is a video based on its extension.
     
@@ -34,7 +35,7 @@ def is_video(filename):
     return filename.lower().endswith(('.mp4', '.mov', '.avi', '.mkv', '.webm', '.flv'))
 
 
-def is_media(filename):
+def is_media(filename: str) -> bool:
     """
     Check if a file is a supported media file (image or video).
     
@@ -47,7 +48,7 @@ def is_media(filename):
     return is_image(filename) or is_video(filename)
 
 
-def get_media_type(filename):
+def get_media_type(filename: str) -> Literal['image', 'video', 'unknown']:
     """
     Get the media type of a file.
     
@@ -65,7 +66,7 @@ def get_media_type(filename):
         return 'unknown'
 
 
-def get_thumbnail_url(filename, media_root):
+def get_thumbnail_url(filename: str, media_root: str) -> str:
     """
     Get the URL for a file's thumbnail.
     

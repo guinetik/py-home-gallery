@@ -6,7 +6,11 @@ A lightweight, Flask-based media gallery server designed for browsing and viewin
 ![Flask](https://img.shields.io/badge/flask-2.0+-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
 
+> **🎉 New in November 2025**: Major security, logging, and error handling improvements! See [docs/IMPROVEMENTS_SUMMARY.md](docs/IMPROVEMENTS_SUMMARY.md) for details.
+
 ## Features
+
+### Core Features
 
 - **Multiple Gallery Views**: Default, random order, and newest-first sorting options
 - **Automatic Video Thumbnails**: Generates thumbnails for videos using the middle frame
@@ -16,6 +20,17 @@ A lightweight, Flask-based media gallery server designed for browsing and viewin
 - **Infinite Scrolling**: Alternative view with dynamic content loading
 - **Lightbox Viewer**: Full-screen viewing for both images and videos
 - **Network Accessible**: Access your media from any device on your home network
+
+### 🔒 Security & Reliability (New!)
+
+- **Path Traversal Protection**: Complete protection against directory traversal attacks
+- **Input Validation**: All user inputs validated and sanitized
+- **Comprehensive Logging**: Structured logging for debugging and auditing
+- **Robust Error Handling**: Graceful degradation with detailed error reporting
+- **Type Safety**: Full type hints for better code quality
+
+📚 **[View complete documentation →](docs/README.md)**
+
 
 ## Demo
 

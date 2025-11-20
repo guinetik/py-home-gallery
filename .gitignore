@@ -174,3 +174,4 @@ cython_debug/
 .pypirc
 
 CONTEXT.md
+llm_docs
