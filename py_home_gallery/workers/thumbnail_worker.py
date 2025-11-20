@@ -30,13 +30,13 @@ class ThumbnailWorker:
         >>> worker.stop()
     """
     
-    def __init__(self, num_threads: int = 2, max_queue_size: int = 100):
+    def __init__(self, num_threads: int = 2, max_queue_size: int = 500):
         """
         Initialize the thumbnail worker.
-        
+
         Args:
             num_threads: Number of worker threads (default: 2)
-            max_queue_size: Maximum queue size (default: 100)
+            max_queue_size: Maximum queue size (default: 500)
         """
         self.num_threads = num_threads
         self.job_queue: queue.Queue = queue.Queue(maxsize=max_queue_size)
@@ -167,31 +167,33 @@ class ThumbnailWorker:
         self.threads = []
         logger.info("Thumbnail worker stopped")
     
-    def add_job(self, video_path: str, thumbnail_path: str, 
-                callback: Optional[Callable] = None) -> bool:
+    def add_job(self, video_path: str, thumbnail_path: str,
+                callback: Optional[Callable] = None, timeout: float = 30.0) -> bool:
         """
         Add a thumbnail generation job to the queue.
-        
+
         Args:
             video_path: Path to the video file
             thumbnail_path: Path where thumbnail should be saved
             callback: Optional callback function(video_path, thumb_path, success)
-            
+            timeout: How long to wait if queue is full (default: 30s)
+
         Returns:
-            bool: True if job was added, False if queue is full
+            bool: True if job was added, False if timeout waiting for queue space
         """
         if not self.running:
             logger.warning("Worker not running, cannot add job")
             return False
-        
+
         try:
-            self.job_queue.put((video_path, thumbnail_path, callback), block=False)
+            # Block and wait up to timeout seconds if queue is full
+            self.job_queue.put((video_path, thumbnail_path, callback), block=True, timeout=timeout)
             with self.stats_lock:
                 self.stats['jobs_pending'] = self.job_queue.qsize()
             logger.debug(f"Job added: {video_path}")
             return True
         except queue.Full:
-            logger.warning(f"Job queue full, cannot add: {video_path}")
+            logger.error(f"Job queue full after {timeout}s timeout, cannot add: {video_path}")
             return False
     
     def wait_completion(self, timeout: Optional[float] = None) -> bool:

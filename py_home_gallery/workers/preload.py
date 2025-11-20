@@ -51,14 +51,14 @@ def preload_thumbnails(media_root: str, thumbnail_dir: str, num_threads: int = 2
             # Get the thumbnail worker
             worker = get_thumbnail_worker(num_threads=num_threads)
             
-            # Queue thumbnails that don't exist yet
-            queued = 0
+            # Prepare list of videos that need thumbnails
+            videos_to_process = []
             skipped = 0
-            
+
             for video_path, _ in video_files:
                 # Construct full paths
                 full_video_path = os.path.join(media_root, video_path)
-                
+
                 # Generate thumbnail filename
                 safe_filename = video_path.replace('\\', '_').replace('/', '_')
                 if len(safe_filename) > 200:
@@ -66,32 +66,52 @@ def preload_thumbnails(media_root: str, thumbnail_dir: str, num_threads: int = 2
                     file_hash = hashlib.md5(safe_filename.encode()).hexdigest()
                     extension = os.path.splitext(safe_filename)[1]
                     safe_filename = f"{file_hash}{extension}"
-                
+
                 thumbnail_path = os.path.join(thumbnail_dir, f"{safe_filename}.png")
-                
+
                 # Check if thumbnail already exists
                 if os.path.exists(thumbnail_path) and os.path.getsize(thumbnail_path) > 0:
                     skipped += 1
                     logger.debug(f"Thumbnail exists, skipping: {video_path}")
                     continue
-                
+
                 # Check if video file exists
                 if not os.path.exists(full_video_path):
                     logger.warning(f"Video file not found: {full_video_path}")
                     continue
-                
-                # Add to worker queue
-                success = worker.add_job(full_video_path, thumbnail_path)
-                if success:
-                    queued += 1
-                    logger.debug(f"Queued for thumbnail generation: {video_path}")
-                else:
-                    logger.warning(f"Failed to queue (queue full?): {video_path}")
-            
-            logger.info(f"Thumbnail preload complete: {queued} queued, {skipped} already exist")
-            
-            if queued > 0:
-                logger.info(f"Background worker will generate {queued} thumbnails...")
+
+                videos_to_process.append((full_video_path, thumbnail_path, video_path))
+
+            logger.info(f"Found {len(videos_to_process)} videos needing thumbnails, {skipped} already exist")
+
+            # Process in batches of 500
+            batch_size = 500
+            total_queued = 0
+
+            for batch_num in range(0, len(videos_to_process), batch_size):
+                batch = videos_to_process[batch_num:batch_num + batch_size]
+                batch_count = len(batch)
+
+                logger.info(f"Processing batch {batch_num // batch_size + 1}: {batch_count} videos")
+
+                # Add batch to queue
+                for full_video_path, thumbnail_path, video_path in batch:
+                    success = worker.add_job(full_video_path, thumbnail_path, timeout=10.0)
+                    if success:
+                        total_queued += 1
+                    else:
+                        logger.warning(f"Failed to queue: {video_path}")
+
+                # Wait for batch to complete before queuing next batch
+                if batch_num + batch_size < len(videos_to_process):
+                    logger.info(f"Waiting for batch to complete before queuing next batch...")
+                    worker.wait_completion()
+                    logger.info(f"Batch complete, continuing to next batch")
+
+            logger.info(f"Thumbnail preload complete: {total_queued} total queued, {skipped} already exist")
+
+            if total_queued > 0:
+                logger.info(f"Background worker will generate {total_queued} thumbnails...")
         
         except Exception as e:
             logger.error(f"Error during thumbnail preload: {e}")

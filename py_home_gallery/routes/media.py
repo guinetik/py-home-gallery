@@ -55,39 +55,36 @@ def serve_thumbnail(filename):
         
         thumbnail_path = os.path.join(thumbnail_dir, f"{safe_filename}.png")
         
-        # If thumbnail exists and is valid, serve it
+        # If thumbnail exists and is valid, serve it immediately
         if os.path.exists(thumbnail_path) and os.path.getsize(thumbnail_path) > 0:
             logger.debug(f"Serving existing thumbnail: {filename}")
             return send_file(thumbnail_path)
-        
-        # If thumbnail doesn't exist, add to background queue and return placeholder
-        if not os.path.exists(thumbnail_path):
-            logger.info(f"Thumbnail not found, queuing for generation: {filename}")
-            
-            # Add job to worker (non-blocking)
-            if media_file_path and os.path.exists(media_file_path):
-                thumbnail_worker.add_job(media_file_path, thumbnail_path)
-            
-            # Return placeholder immediately
-            logger.debug(f"Using placeholder while generating: {filename}")
-            return placeholder_url or abort(404, description="Thumbnail not ready")
-        
-        # Fallback: try synchronous generation if worker is not busy
-        logger.debug(f"Attempting synchronous thumbnail generation: {filename}")
+
+        # Thumbnail doesn't exist - generate it synchronously (blocking request)
+        logger.info(f"Thumbnail not found, generating synchronously: {filename}")
+
+        # Ensure media file exists
+        if not media_file_path or not os.path.exists(media_file_path):
+            logger.warning(f"Media file not found for thumbnail: {filename}")
+            abort(404, description="Media file not found")
+
+        # Generate thumbnail synchronously - this will block until done
         thumbnail_result = ensure_thumbnail_exists(
-            media_root, 
-            thumbnail_dir, 
-            filename, 
+            media_root,
+            thumbnail_dir,
+            filename,
             placeholder_url
         )
-        
-        if thumbnail_result == placeholder_url or not thumbnail_result:
-            return placeholder_url or abort(404, description="Thumbnail generation failed")
-        
-        if os.path.exists(thumbnail_result):
-            return send_file(thumbnail_result)
-        
-        return placeholder_url or abort(404, description="Thumbnail not available")
+
+        # Check if generation was successful
+        if thumbnail_result and thumbnail_result != placeholder_url:
+            if os.path.exists(thumbnail_result) and os.path.getsize(thumbnail_result) > 0:
+                logger.info(f"Successfully generated thumbnail: {filename}")
+                return send_file(thumbnail_result)
+
+        # Generation failed - return 404
+        logger.error(f"Failed to generate thumbnail for: {filename}")
+        abort(404, description="Thumbnail generation failed")
     
     except Exception as e:
         logger.error(f"Error serving thumbnail for {filename}: {e}")

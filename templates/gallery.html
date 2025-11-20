@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
     <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="/static/metadata.js" defer></script>
 </head>
 <body>
     <nav>
@@ -111,28 +112,21 @@
             var grid = document.querySelector('.grid');
             var iso;
             
-            // Initialize Isotope first (before images load)
-            iso = new Isotope(grid, {
-                itemSelector: '.grid-item',
-                layoutMode: 'masonry',
-                percentPosition: true,
-                masonry: {
-                    columnWidth: '.grid-sizer'
-                }
-            });
-            
-            console.log('Isotope initialized');
-            
-            // Relayout on each image load (progressive loading)
-            imagesLoaded(grid).on('progress', function() {
-                console.log('Image loaded, relaying out');
-                iso.layout();
-            });
-            
-            // Final layout when all images are loaded
+            // Wait for all images to load first
             imagesLoaded(grid, function() {
-                console.log('All images loaded, final layout');
-                iso.layout();
+                console.log('Images loaded, initializing Isotope');
+                
+                // Initialize Isotope AFTER images loaded
+                iso = new Isotope(grid, {
+                    itemSelector: '.grid-item',
+                    layoutMode: 'masonry',
+                    percentPosition: true,
+                    masonry: {
+                        columnWidth: '.grid-sizer'
+                    }
+                });
+                
+                console.log('Isotope initialized successfully');
             });
             
             // Initialize GLightbox
@@ -141,6 +135,15 @@
                 touchNavigation: true,
                 loop: true,
                 autoplayVideos: true
+            });
+
+            // Handle window resize to re-layout Isotope
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    if (iso) iso.layout();
+                }, 250);
             });
         });
     </script>

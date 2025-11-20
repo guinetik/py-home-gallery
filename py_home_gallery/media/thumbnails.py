@@ -48,13 +48,11 @@ def generate_video_thumbnail(video_path: str, thumbnail_path: str, width: int = 
             logger.error(f"Video file not found: {video_path}")
             return False
         
-        # Check file size (skip very large files to avoid memory issues)
-        file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
-        if file_size_mb > 500:  # Skip files larger than 500MB
-            logger.warning(f"Video file too large for thumbnail generation ({file_size_mb:.2f}MB): {video_path}")
-            return False
-        
         logger.info(f"Generating thumbnail for: {video_path}")
+
+        # Log file size for monitoring
+        file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
+        logger.debug(f"Video file size: {file_size_mb:.2f}MB")
         
         # Open the video file
         clip = VideoFileClip(video_path)

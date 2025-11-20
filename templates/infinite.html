@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
     <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="/static/metadata.js" defer></script>
 </head>
 <body>
     <nav>
@@ -34,78 +35,101 @@
     </div>
     <div class="loading" id="loading">Loading...</div>
     <script>
-        // Initialize Isotope after images have loaded
-        var grid = document.querySelector('.grid');
-        var iso;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize variables
+            var grid = document.querySelector('.grid');
+            var iso;
 
-        imagesLoaded(grid, function () {
-            iso = new Isotope(grid, {
-                itemSelector: '.grid-item',
-                percentPosition: true,
-                masonry: {
-                    columnWidth: '.grid-sizer'
+            // Wait for all images to load first
+            imagesLoaded(grid, function() {
+                console.log('Images loaded, initializing Isotope');
+
+                // Initialize Isotope AFTER images loaded
+                iso = new Isotope(grid, {
+                    itemSelector: '.grid-item',
+                    layoutMode: 'masonry',
+                    percentPosition: true,
+                    masonry: {
+                        columnWidth: '.grid-sizer'
+                    }
+                });
+
+                console.log('Isotope initialized successfully');
+            });
+
+            // Initialize GLightbox
+            let lightbox = GLightbox({
+                selector: '.glightbox',
+                touchNavigation: true,
+                loop: true,
+            });
+
+            // Infinite scroll implementation
+            let currentPage = 1;
+            let isLoading = false;
+
+            const loadMoreItems = async () => {
+                if (isLoading) return;
+
+                isLoading = true;
+                document.getElementById('loading').style.display = 'block';
+
+                try {
+                    const response = await fetch(`/gallery-data?page=${currentPage + 1}&sort=new`);
+                    const data = await response.json();
+
+                    data.media.forEach(item => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = `grid-item ${item.path.endsWith('.mp4') ? 'video' : 'image'}`;
+                        itemDiv.innerHTML = `
+                            <a href="/media/${item.path}" class="glightbox" data-gallery="gallery">
+                                <img src="${item.thumbnail}" alt="Media Thumbnail">
+                            </a>`;
+                        grid.appendChild(itemDiv);
+                    });
+
+                    imagesLoaded(grid, () => {
+                        iso.appended(grid.querySelectorAll('.grid-item'));
+                        iso.layout();
+
+                        // Add info icons to new items
+                        if (window.addInfoIcons) {
+                            window.addInfoIcons();
+                        }
+                    });
+
+                    // Reinitialize GLightbox for new items
+                    lightbox = GLightbox({
+                        selector: '.glightbox',
+                        touchNavigation: true,
+                        loop: true,
+                    });
+
+                    currentPage++;
+                    if (!data.has_next) {
+                        document.getElementById('loading').style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error loading more items:', error);
+                } finally {
+                    isLoading = false;
+                }
+            };
+
+            window.addEventListener('scroll', () => {
+                if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+                    loadMoreItems();
                 }
             });
-        });
 
-        // Initialize GLightbox
-        let lightbox = GLightbox({
-            selector: '.glightbox',
-            touchNavigation: true,
-            loop: true,
-        });
-
-        // Infinite scroll implementation
-        let currentPage = 1;
-        let isLoading = false;
-
-        const loadMoreItems = async () => {
-			if (isLoading) return;
-
-			isLoading = true;
-			document.getElementById('loading').style.display = 'block';
-
-			try {
-				const response = await fetch(`/gallery-data?page=${currentPage + 1}&sort=new`);
-				const data = await response.json();
-
-				data.media.forEach(item => {
-					const itemDiv = document.createElement('div');
-					itemDiv.className = `grid-item ${item.path.endsWith('.mp4') ? 'video' : 'image'}`;
-					itemDiv.innerHTML = `
-						<a href="/media/${item.path}" class="glightbox" data-gallery="gallery">
-							<img src="${item.thumbnail}" alt="Media Thumbnail">
-						</a>`;
-					grid.appendChild(itemDiv);
-				});
-
-				imagesLoaded(grid, () => {
-					iso.appended(grid.querySelectorAll('.grid-item'));
-					iso.layout();
-				});
-
-				// Reinitialize GLightbox for new items
-				lightbox = GLightbox({
-					selector: '.glightbox',
-					touchNavigation: true,
-					loop: true,
-				});
-
-				currentPage++;
-				if (!data.has_next) {
-					document.getElementById('loading').style.display = 'none';
-				}
-			} catch (error) {
-				console.error('Error loading more items:', error);
-			} finally {
-				isLoading = false;
-			}
-		};
-
-        window.addEventListener('scroll', () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-                loadMoreItems();
-            }
+            // Handle window resize to re-layout Isotope
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    if (iso) iso.layout();
+                }, 250);
+            });
         });
     </script>
 </body>

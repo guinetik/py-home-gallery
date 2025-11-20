@@ -5,9 +5,10 @@ This package contains Flask route definitions for:
 - Gallery views
 - Media serving
 - Infinite scrolling
+- Metadata API
 """
 
-from py_home_gallery.routes import gallery, media, infinite
+from py_home_gallery.routes import gallery, media, infinite, metadata
 
 # Redefine the register_routes function to use our blueprint modules
 def register_routes(app):
@@ -17,3 +18,4 @@ def register_routes(app):
     app.register_blueprint(gallery.bp)
     app.register_blueprint(media.bp)
     app.register_blueprint(infinite.bp)
+    app.register_blueprint(metadata.bp)
