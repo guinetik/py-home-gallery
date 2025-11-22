@@ -242,6 +242,8 @@ def get_sorted_files(media_root: str, folder_path: str, sort_by: str = "default"
 
         # Sort the media
         if sort_by == "random":
+            # Make a copy to avoid modifying the cached list
+            media = media.copy()
             random.shuffle(media)
             logger.debug(f"Randomized {len(media)} media files")
         elif sort_by == "new":
