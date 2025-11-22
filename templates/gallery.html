@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
     <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="/static/gallery.js"></script>
     <script src="/static/metadata.js" defer></script>
 </head>
 <body>
@@ -71,20 +72,34 @@
         }
 	</script>
     </nav>
-    
+
+    <!-- Initial Loading Spinner -->
+    <div class="initial-loading" id="initialLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading gallery...</div>
+    </div>
+
     <div class="grid">
         <div class="grid-sizer"></div>
-        {% for media, thumbnail in media_files %}
-            {% if media.endswith('.mp4') or media.endswith('.mov') or media.endswith('.avi') or media.endswith('.mkv') %}
-                <div class="grid-item video-item">
-                    <a href="/media/{{ media }}" class="glightbox" data-gallery="gallery" data-type="video">
-                        <img src="{{ thumbnail if thumbnail else placeholder }}" alt="Video Thumbnail">
+        {% for item in media_files %}
+            {% if item.path.endswith('.mp4') or item.path.endswith('.mov') or item.path.endswith('.avi') or item.path.endswith('.mkv') %}
+                <div class="grid-item video-item"
+                     style="aspect-ratio: {{ item.width }} / {{ item.height }};">
+                    <a href="/media/{{ item.path }}" class="glightbox" data-gallery="gallery" data-type="video">
+                        <img src="{{ item.thumbnail if item.thumbnail else placeholder }}"
+                             alt="Video Thumbnail"
+                             width="{{ item.width }}"
+                             height="{{ item.height }}">
                     </a>
                 </div>
             {% else %}
-                <div class="grid-item image-item">
-                    <a href="/media/{{ media }}" class="glightbox" data-gallery="gallery">
-                        <img src="{{ thumbnail }}" alt="Image">
+                <div class="grid-item image-item"
+                     style="aspect-ratio: {{ item.width }} / {{ item.height }};">
+                    <a href="/media/{{ item.path }}" class="glightbox" data-gallery="gallery">
+                        <img src="{{ item.thumbnail }}"
+                             alt="Image"
+                             width="{{ item.width }}"
+                             height="{{ item.height }}">
                     </a>
                 </div>
             {% endif %}
@@ -108,43 +123,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize variables
-            var grid = document.querySelector('.grid');
-            var iso;
-            
-            // Wait for all images to load first
-            imagesLoaded(grid, function() {
-                console.log('Images loaded, initializing Isotope');
-                
-                // Initialize Isotope AFTER images loaded
-                iso = new Isotope(grid, {
-                    itemSelector: '.grid-item',
-                    layoutMode: 'masonry',
-                    percentPosition: true,
-                    masonry: {
-                        columnWidth: '.grid-sizer'
-                    }
-                });
-                
-                console.log('Isotope initialized successfully');
-            });
-            
-            // Initialize GLightbox
-            const lightbox = GLightbox({
-                selector: '.glightbox',
-                touchNavigation: true,
-                loop: true,
-                autoplayVideos: true
-            });
-
-            // Handle window resize to re-layout Isotope
-            let resizeTimer;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(() => {
-                    if (iso) iso.layout();
-                }, 250);
-            });
+            // Initialize gallery using shared helper
+            initializeGallery();
+            // All setup (Isotope, GLightbox, spinner hiding, resize handler) is done!
         });
     </script>
 </body>

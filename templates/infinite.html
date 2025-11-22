@@ -9,6 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
     <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="/static/gallery.js"></script>
     <script src="/static/metadata.js" defer></script>
 </head>
 <body>
@@ -23,12 +24,23 @@
             <a href="/" style="color: white; background: rgba(0, 0, 0, 0.2); padding: 8px 15px; border-radius: 8px;">Back to Home</a>
         </div>
     </nav>
+
+    <!-- Initial Loading Spinner -->
+    <div class="initial-loading" id="initialLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading gallery...</div>
+    </div>
+
     <div class="grid">
         <div class="grid-sizer"></div>
-        {% for media, thumbnail in media_files %}
-            <div class="grid-item {{ 'video' if media.endswith('.mp4') else 'image' }}">
-                <a href="/media/{{ media }}" class="glightbox" data-gallery="gallery">
-                    <img src="{{ thumbnail }}" alt="Media Thumbnail">
+        {% for item in media_files %}
+            <div class="grid-item {{ 'video' if item.path.endswith('.mp4') else 'image' }}"
+                 style="aspect-ratio: {{ item.width }} / {{ item.height }};">
+                <a href="/media/{{ item.path }}" class="glightbox" data-gallery="gallery">
+                    <img src="{{ item.thumbnail }}"
+                         alt="Media Thumbnail"
+                         width="{{ item.width }}"
+                         height="{{ item.height }}">
                 </a>
             </div>
         {% endfor %}
@@ -36,33 +48,9 @@
     <div class="loading" id="loading">Loading...</div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize variables
-            var grid = document.querySelector('.grid');
-            var iso;
-
-            // Wait for all images to load first
-            imagesLoaded(grid, function() {
-                console.log('Images loaded, initializing Isotope');
-
-                // Initialize Isotope AFTER images loaded
-                iso = new Isotope(grid, {
-                    itemSelector: '.grid-item',
-                    layoutMode: 'masonry',
-                    percentPosition: true,
-                    masonry: {
-                        columnWidth: '.grid-sizer'
-                    }
-                });
-
-                console.log('Isotope initialized successfully');
-            });
-
-            // Initialize GLightbox
-            let lightbox = GLightbox({
-                selector: '.glightbox',
-                touchNavigation: true,
-                loop: true,
-            });
+            // Initialize gallery using shared helper
+            const { iso, lightbox } = initializeGallery();
+            let currentLightbox = lightbox;
 
             // Infinite scroll implementation
             let currentPage = 1;
@@ -81,29 +69,37 @@
                     data.media.forEach(item => {
                         const itemDiv = document.createElement('div');
                         itemDiv.className = `grid-item ${item.path.endsWith('.mp4') ? 'video' : 'image'}`;
+                        itemDiv.style.aspectRatio = `${item.width} / ${item.height}`;
                         itemDiv.innerHTML = `
                             <a href="/media/${item.path}" class="glightbox" data-gallery="gallery">
-                                <img src="${item.thumbnail}" alt="Media Thumbnail">
+                                <img src="${item.thumbnail}"
+                                     alt="Media Thumbnail"
+                                     width="${item.width}"
+                                     height="${item.height}">
                             </a>`;
                         grid.appendChild(itemDiv);
                     });
 
-                    imagesLoaded(grid, () => {
-                        iso.appended(grid.querySelectorAll('.grid-item'));
-                        iso.layout();
+                    // Get newly added items
+                    const newItems = Array.from(grid.querySelectorAll('.grid-item'))
+                        .slice(-data.media.length);
 
-                        // Add info icons to new items
-                        if (window.addInfoIcons) {
-                            window.addInfoIcons();
-                        }
+                    // Add new items to Isotope and layout
+                    iso.appended(newItems);
+                    iso.layout();
+
+                    // Add info icons to new items
+                    if (window.addInfoIcons) {
+                        window.addInfoIcons();
+                    }
+
+                    // Re-layout when new images load (minor adjustments)
+                    imagesLoaded(newItems, () => {
+                        iso.layout();
                     });
 
                     // Reinitialize GLightbox for new items
-                    lightbox = GLightbox({
-                        selector: '.glightbox',
-                        touchNavigation: true,
-                        loop: true,
-                    });
+                    currentLightbox = initializeGLightbox();
 
                     currentPage++;
                     if (!data.has_next) {
@@ -122,14 +118,7 @@
                 }
             });
 
-            // Handle window resize to re-layout Isotope
-            let resizeTimer;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(() => {
-                    if (iso) iso.layout();
-                }, 250);
-            });
+            // Resize handler is set up by initializeGallery()
         });
     </script>
 </body>

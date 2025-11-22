@@ -306,6 +306,58 @@ The tilde (`~`) shorthand for home directory doesn't work in Windows terminals. 
 
 This application works great as a simple home media server. Set it up on a computer that's always on (or a Raspberry Pi), transfer media from your phone using your preferred sync method, and access it from any device in your home, including smart TVs, via a web browser.
 
+## Troubleshooting
+
+### Slow Lightbox Performance on Windows
+
+**Issue**: GLightbox feels sluggish when navigating between images, especially on Windows.
+
+**Cause**: Flask's development server is single-threaded, and GLightbox's default preload setting tries to load multiple images simultaneously, which can overwhelm the server.
+
+**Solution**: The application is now configured with `preload: false` by default, which disables image preloading in GLightbox. This provides better performance on Flask's development server.
+
+**For Production**: If you deploy with a production WSGI server (like Gunicorn or Waitress), you can enable preload for better user experience:
+
+```javascript
+// In static/gallery.js, you can customize GLightbox options:
+const { iso, lightbox } = initializeGallery({
+    // ... other options
+});
+
+// Or enable preload manually:
+initializeGLightbox('.glightbox', { preload: true });
+```
+
+### Background Workers
+
+**Disable workers** if they're causing issues:
+```bash
+# Command line
+python run.py --no-worker
+
+# Environment variable
+export PY_HOME_GALLERY_WORKER_ENABLED=false
+```
+
+**Adjust worker threads** for better performance:
+```bash
+# Use more threads (default is 2)
+python run.py --worker-threads 4
+```
+
+### Performance Tips
+
+1. **Use SSD storage** for media and thumbnails when possible
+2. **Disable antivirus scanning** for the media and thumbnail directories (if safe to do so)
+3. **For production**, use a proper WSGI server:
+   ```bash
+   # Install waitress (works on Windows)
+   pip install waitress
+
+   # Run with waitress
+   waitress-serve --host=0.0.0.0 --port=8000 --call py_home_gallery:create_app
+   ```
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
