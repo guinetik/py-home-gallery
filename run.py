@@ -27,7 +27,7 @@ def main():
     
     # Create and run the application
     app = create_app(config)
-    app.run(host=config.host, port=config.port)
+    app.run(host=config.host, port=config.port, threaded=True)
 
 
 if __name__ == '__main__':
