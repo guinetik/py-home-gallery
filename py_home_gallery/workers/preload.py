@@ -34,12 +34,13 @@ def preload_thumbnails(media_root: str, thumbnail_dir: str, num_threads: int = 2
             
             # Scan directory for all media files
             logger.info(f"Scanning directory: {media_root}")
-            media_files = scan_directory(media_root, use_cache=False)
+            # Skip dimension extraction for faster scanning - we only need file paths
+            media_files = scan_directory(media_root, use_cache=False, include_dimensions=False)
             
             # Filter video files
             video_files = [
-                (path, thumb) for path, thumb in media_files
-                if path.lower().endswith(('.mp4', '.mov', '.avi', '.mkv', '.webm', '.flv'))
+                item for item in media_files
+                if item['path'].lower().endswith(('.mp4', '.mov', '.avi', '.mkv', '.webm', '.flv'))
             ]
             
             logger.info(f"Found {len(video_files)} video files")
@@ -55,7 +56,8 @@ def preload_thumbnails(media_root: str, thumbnail_dir: str, num_threads: int = 2
             videos_to_process = []
             skipped = 0
 
-            for video_path, _ in video_files:
+            for video_item in video_files:
+                video_path = video_item['path']
                 # Construct full paths
                 full_video_path = os.path.join(media_root, video_path)
 
@@ -142,7 +144,8 @@ def preload_all(media_root: str, thumbnail_dir: str,
         try:
             logger.info("Warming up directory cache...")
             from py_home_gallery.media.scanner import scan_directory
-            files = scan_directory(media_root, use_cache=True)
+            # Skip dimension extraction during cache warmup for much faster startup
+            files = scan_directory(media_root, use_cache=True, include_dimensions=False)
             logger.info(f"Cache warmed up: {len(files)} files indexed")
         except Exception as e:
             logger.error(f"Error warming up cache: {e}")
@@ -153,4 +156,5 @@ def preload_all(media_root: str, thumbnail_dir: str,
     logger.info("="*60)
     logger.info("PRELOAD INITIATED - Server ready for connections")
     logger.info("="*60)
+
 

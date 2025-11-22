@@ -295,3 +295,4 @@ def shutdown_thumbnail_worker() -> None:
         _global_worker = None
         logger.info("Global thumbnail worker shut down")
 
+
