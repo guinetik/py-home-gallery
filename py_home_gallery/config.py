@@ -31,7 +31,10 @@ class Config:
         # Worker settings
         self.worker_threads = int(os.environ.get('PY_HOME_GALLERY_WORKER_THREADS', '2'))
         self.worker_enabled = os.environ.get('PY_HOME_GALLERY_WORKER_ENABLED', 'true').lower() == 'true'
-        
+
+        # Media serving settings
+        self.serve_media = os.environ.get('PY_HOME_GALLERY_SERVE_MEDIA', 'true').lower() == 'true'
+
         # Logging settings
         self.log_level = os.environ.get('PY_HOME_GALLERY_LOG_LEVEL', 'INFO').upper()
         self.log_to_file = os.environ.get('PY_HOME_GALLERY_LOG_TO_FILE', 'true').lower() == 'true'
@@ -55,7 +58,10 @@ class Config:
         self.worker_threads = parsed_args.worker_threads
         self.cache_enabled = not parsed_args.no_cache
         self.worker_enabled = not parsed_args.no_worker
-        
+
+        # Media serving settings
+        self.serve_media = not parsed_args.no_serve_media
+
         # Logging settings
         self.log_level = parsed_args.log_level
         self.log_to_file = not parsed_args.no_log_file
@@ -149,7 +155,14 @@ class Config:
             action='store_true',
             help='Disable background thumbnail generation'
         )
-        
+
+        parser.add_argument(
+            '--no-serve-media',
+            action='store_true',
+            help='Disable Flask media file serving (for use with external server like Nginx). '
+                 'ENV: PY_HOME_GALLERY_SERVE_MEDIA'
+        )
+
         parser.add_argument(
             '--log-level',
             type=str,
@@ -205,6 +218,7 @@ class Config:
         print(f"Items Per Page: {self.items_per_page}")
         print(f"Host: {self.host}")
         print(f"Port: {self.port}")
+        print(f"Serve Media: {self.serve_media}")
         print(f"Cache Enabled: {self.cache_enabled} (TTL: {self.cache_ttl}s)")
         print(f"Background Workers: {self.worker_threads if self.worker_enabled else 'Disabled'}")
         print(f"Log Level: {self.log_level}")

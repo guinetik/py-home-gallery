@@ -37,6 +37,7 @@ def create_app(config):
     app.config['THUMBNAIL_DIR'] = config.thumbnail_dir
     app.config['ITEMS_PER_PAGE'] = config.items_per_page
     app.config['PLACEHOLDER_URL'] = config.placeholder_url
+    app.config['SERVE_MEDIA'] = config.serve_media
     app.config['CACHE_ENABLED'] = config.cache_enabled
     app.config['CACHE_TTL'] = config.cache_ttl
     app.config['WORKER_ENABLED'] = config.worker_enabled
