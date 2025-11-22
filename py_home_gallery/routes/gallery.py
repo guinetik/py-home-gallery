@@ -7,6 +7,7 @@ including default, random, and newest-first sorting.
 
 from flask import Blueprint, render_template, request, current_app
 from py_home_gallery.media.scanner import list_subfolders, validate_and_get_folder_path, get_sorted_files
+from py_home_gallery.media.dimension_helper import add_dimensions_to_items
 from py_home_gallery.utils.pagination import paginate_items
 from py_home_gallery.media.utils import is_image, is_video
 
@@ -40,20 +41,24 @@ def handle_gallery(folder=None, sort_by="default", media_type=None):
     
     # Filter by media type if specified
     if media_type == 'images':
-        media = [(path, thumb) for path, thumb in media if is_image(path)]
+        media = [item for item in media if is_image(item['path'])]
     elif media_type == 'videos':
-        media = [(path, thumb) for path, thumb in media if is_video(path)]
+        media = [item for item in media if is_video(item['path'])]
 
     # Paginate the files
     page = int(request.args.get('page', 1))
     paginated_media, total_pages = paginate_items(media, page, items_per_page)
 
+    # Extract real dimensions for paginated items only
+    thumbnail_dir = current_app.config['THUMBNAIL_DIR']
+    add_dimensions_to_items(paginated_media, media_root, thumbnail_dir)
+
     # List all subfolders for dropdown
     folders = list_subfolders(media_root)
 
     # Count different media types for the UI
-    image_count = len([(path, thumb) for path, thumb in media if is_image(path)])
-    video_count = len([(path, thumb) for path, thumb in media if is_video(path)])
+    image_count = len([item for item in media if is_image(item['path'])])
+    video_count = len([item for item in media if is_video(item['path'])])
     total_count = len(media)
     
     print(f"Media stats - Total: {total_count}, Images: {image_count}, Videos: {video_count}")
