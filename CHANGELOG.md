@@ -1,5 +1,49 @@
 # CHANGELOG
 
+## 0.1.0 - 2025-11-23
+
+### 🏭 Added
+
+- Docker deployment with Nginx for production use
+- Environment-based configuration via `.env` file
+- Site-wide dark/light mode theme system with localStorage persistence
+- New home page with modern card-based design and live stats
+- API endpoint `/api/stats` for media collection statistics
+- Random gallery page with shuffle button (replaces pagination)
+- Theme toggle button in navigation bar
+- Production mode flag and serve-media configuration
+
+### ⚡ Performance
+
+- Implemented mtime caching during directory scan (eliminates repeated filesystem calls)
+- Added sorted results caching with unique keys per sort type
+- Progressive Isotope layout - re-layout on each image load to prevent overlaps
+- Nginx serves static files (3-5x faster than Flask)
+
+### 💡 Fixed
+
+- Cache corruption bug from in-place list modification in random shuffle
+- Duplicate logging from child logger propagation
+- Infinite scroll broken due to missing grid element return
+- Navbar height inconsistency between light and dark modes
+- Environment variables being overwritten by CLI argument defaults
+
+### 🎨 Design
+
+- Sleek black background with blue accents (Apple + Vercel inspired)
+- Glassmorphism effects with backdrop blur
+- Consistent navbar across all pages (72px min-height)
+- Responsive theme toggle with system preference detection
+- Updated color scheme from purple to blue gradients
+
+### 📚 Documentation
+
+- Added comprehensive Docker deployment guide in README
+- Documented Nginx fallback behavior for on-demand thumbnail generation
+- Added performance benefits comparison
+
+---
+
 ## 0.0.1
 
 ### 🏭 Added
