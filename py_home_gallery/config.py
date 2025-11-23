@@ -8,6 +8,18 @@ and application configuration settings.
 import os
 import sys
 from argparse import ArgumentParser
+from py_home_gallery.constants import (
+    DEFAULT_ITEMS_PER_PAGE,
+    DEFAULT_HOST,
+    DEFAULT_PORT,
+    DEFAULT_PLACEHOLDER_URL,
+    DEFAULT_CACHE_TTL,
+    DEFAULT_WORKER_THREADS,
+    DEFAULT_MEDIA_DIR,
+    THUMBNAIL_DIR_NAME,
+    THUMBNAIL_SUBDIR_NAME,
+    DEFAULT_LOG_DIR,
+)
 
 
 class Config:
@@ -15,21 +27,26 @@ class Config:
     
     def __init__(self):
         """Initialize default configuration values."""
-        self.media_dir = os.environ.get('PY_HOME_GALLERY_MEDIA_DIR', './media')
-        self.thumbnail_dir = os.path.join(os.path.expanduser('~'), '.py-home-gallery', 'thumbnails')
-        self.thumbnail_dir = os.environ.get('PY_HOME_GALLERY_THUMB_DIR', self.thumbnail_dir)
-        self.items_per_page = int(os.environ.get('PY_HOME_GALLERY_ITEMS_PER_PAGE', '50'))
-        self.host = os.environ.get('PY_HOME_GALLERY_HOST', '0.0.0.0')
-        self.port = int(os.environ.get('PY_HOME_GALLERY_PORT') or os.environ.get('PORT', '8000'))
-        self.placeholder_url = os.environ.get('PY_HOME_GALLERY_PLACEHOLDER', 'https://via.placeholder.com/300x200')
+        default_thumb_dir = os.path.join(
+            os.path.expanduser('~'),
+            THUMBNAIL_DIR_NAME,
+            THUMBNAIL_SUBDIR_NAME
+        )
+
+        self.media_dir = os.environ.get('PY_HOME_GALLERY_MEDIA_DIR', DEFAULT_MEDIA_DIR)
+        self.thumbnail_dir = os.environ.get('PY_HOME_GALLERY_THUMB_DIR', default_thumb_dir)
+        self.items_per_page = int(os.environ.get('PY_HOME_GALLERY_ITEMS_PER_PAGE', str(DEFAULT_ITEMS_PER_PAGE)))
+        self.host = os.environ.get('PY_HOME_GALLERY_HOST', DEFAULT_HOST)
+        self.port = int(os.environ.get('PY_HOME_GALLERY_PORT') or os.environ.get('PORT', str(DEFAULT_PORT)))
+        self.placeholder_url = os.environ.get('PY_HOME_GALLERY_PLACEHOLDER', DEFAULT_PLACEHOLDER_URL)
         self.skip_ffmpeg_check = False
-        
+
         # Cache settings
         self.cache_enabled = os.environ.get('PY_HOME_GALLERY_CACHE_ENABLED', 'true').lower() == 'true'
-        self.cache_ttl = int(os.environ.get('PY_HOME_GALLERY_CACHE_TTL', '300'))  # 5 minutes
-        
+        self.cache_ttl = int(os.environ.get('PY_HOME_GALLERY_CACHE_TTL', str(DEFAULT_CACHE_TTL)))
+
         # Worker settings
-        self.worker_threads = int(os.environ.get('PY_HOME_GALLERY_WORKER_THREADS', '2'))
+        self.worker_threads = int(os.environ.get('PY_HOME_GALLERY_WORKER_THREADS', str(DEFAULT_WORKER_THREADS)))
         self.worker_enabled = os.environ.get('PY_HOME_GALLERY_WORKER_ENABLED', 'true').lower() == 'true'
 
         # Media serving settings
@@ -41,7 +58,7 @@ class Config:
         # Logging settings
         self.log_level = os.environ.get('PY_HOME_GALLERY_LOG_LEVEL', 'INFO').upper()
         self.log_to_file = os.environ.get('PY_HOME_GALLERY_LOG_TO_FILE', 'true').lower() == 'true'
-        self.log_dir = os.environ.get('PY_HOME_GALLERY_LOG_DIR', './logs')
+        self.log_dir = os.environ.get('PY_HOME_GALLERY_LOG_DIR', DEFAULT_LOG_DIR)
         
     def load_from_args(self, args=None):
         """Load configuration from command-line arguments."""
@@ -84,51 +101,51 @@ class Config:
         parser = ArgumentParser(description='Media Gallery Server')
         
         parser.add_argument(
-            '--media-dir', 
-            type=str, 
+            '--media-dir',
+            type=str,
             default=self.media_dir,
-            help='Root directory containing media files (default: ./media). '
+            help=f'Root directory containing media files (default: {DEFAULT_MEDIA_DIR}). '
                  'ENV: PY_HOME_GALLERY_MEDIA_DIR (CMD: %%USERPROFILE%%\\Media, PowerShell: $env:USERPROFILE\\Media)'
         )
-        
+
         parser.add_argument(
-            '--thumbnail-dir', 
-            type=str, 
+            '--thumbnail-dir',
+            type=str,
             default=self.thumbnail_dir,
-            help='Directory to store generated thumbnails '
-                 '(default: ~/.py-home-gallery/thumbnails on Linux/Mac or C:\\Users\\YourUsername\\.py-home-gallery\\thumbnails on Windows). '
+            help=f'Directory to store generated thumbnails '
+                 f'(default: ~/{THUMBNAIL_DIR_NAME}/{THUMBNAIL_SUBDIR_NAME} on Linux/Mac or C:\\Users\\YourUsername\\{THUMBNAIL_DIR_NAME}\\{THUMBNAIL_SUBDIR_NAME} on Windows). '
                  'ENV: PY_HOME_GALLERY_THUMB_DIR'
         )
-        
+
         parser.add_argument(
-            '--items-per-page', 
-            type=int, 
+            '--items-per-page',
+            type=int,
             default=self.items_per_page,
-            help='Number of items to display per page (default: 50). '
+            help=f'Number of items to display per page (default: {DEFAULT_ITEMS_PER_PAGE}). '
                  'ENV: PY_HOME_GALLERY_ITEMS_PER_PAGE'
         )
-        
+
         parser.add_argument(
-            '--host', 
-            type=str, 
+            '--host',
+            type=str,
             default=self.host,
-            help='Host to run the server on (default: 0.0.0.0). '
+            help=f'Host to run the server on (default: {DEFAULT_HOST}). '
                  'ENV: PY_HOME_GALLERY_HOST'
         )
-        
+
         parser.add_argument(
-            '--port', 
-            type=int, 
+            '--port',
+            type=int,
             default=self.port,
-            help='Port to run the server on (default: 8000). '
+            help=f'Port to run the server on (default: {DEFAULT_PORT}). '
                  'ENV: PY_HOME_GALLERY_PORT'
         )
-        
+
         parser.add_argument(
-            '--placeholder', 
-            type=str, 
+            '--placeholder',
+            type=str,
             default=self.placeholder_url,
-            help='URL for placeholder thumbnails (default: https://via.placeholder.com/300x200). '
+            help=f'URL for placeholder thumbnails (default: {DEFAULT_PLACEHOLDER_URL}). '
                  'ENV: PY_HOME_GALLERY_PLACEHOLDER'
         )
         
@@ -142,15 +159,15 @@ class Config:
             '--cache-ttl',
             type=int,
             default=self.cache_ttl,
-            help='Cache TTL in seconds (default: 300). '
+            help=f'Cache TTL in seconds (default: {DEFAULT_CACHE_TTL}). '
                  'ENV: PY_HOME_GALLERY_CACHE_TTL'
         )
-        
+
         parser.add_argument(
             '--worker-threads',
             type=int,
             default=self.worker_threads,
-            help='Number of background worker threads (default: 2). '
+            help=f'Number of background worker threads (default: {DEFAULT_WORKER_THREADS}). '
                  'ENV: PY_HOME_GALLERY_WORKER_THREADS'
         )
         

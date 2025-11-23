@@ -11,6 +11,14 @@ from py_home_gallery.utils.security import get_safe_path, validate_media_extensi
 from py_home_gallery.utils.logger import get_logger
 from py_home_gallery.utils.cache import get_directory_cache, cache_key_for_directory
 from py_home_gallery.media.dimensions import get_media_dimensions
+from py_home_gallery.constants import (
+    CACHE_SUFFIX_WITH_DIMS,
+    CACHE_SUFFIX_NO_DIMS,
+    DEFAULT_VIDEO_WIDTH,
+    DEFAULT_VIDEO_HEIGHT,
+    DEFAULT_IMAGE_WIDTH,
+    DEFAULT_IMAGE_HEIGHT,
+)
 
 logger = get_logger(__name__)
 directory_cache = get_directory_cache()
@@ -114,7 +122,7 @@ def scan_directory(directory: str, use_cache: bool = True, include_dimensions: b
     # Try to get from cache first
     if use_cache:
         # Use different cache keys for with/without dimensions
-        cache_suffix = "_with_dims" if include_dimensions else "_no_dims"
+        cache_suffix = CACHE_SUFFIX_WITH_DIMS if include_dimensions else CACHE_SUFFIX_NO_DIMS
         cache_key = cache_key_for_directory(directory) + cache_suffix
         cached_result = directory_cache.get(cache_key)
         if cached_result is not None:
@@ -175,11 +183,11 @@ def scan_directory(directory: str, use_cache: bool = True, include_dimensions: b
                     else:
                         # Use fast defaults without reading files
                         if file.lower().endswith(('.mp4', '.mov', '.avi', '.mkv', '.webm', '.flv')):
-                            media_info['width'] = 1920
-                            media_info['height'] = 1080
+                            media_info['width'] = DEFAULT_VIDEO_WIDTH
+                            media_info['height'] = DEFAULT_VIDEO_HEIGHT
                         else:
-                            media_info['width'] = 1600
-                            media_info['height'] = 1200
+                            media_info['width'] = DEFAULT_IMAGE_WIDTH
+                            media_info['height'] = DEFAULT_IMAGE_HEIGHT
 
                     # For videos, use a separate thumbnail generation logic
                     if file.lower().endswith(('.mp4', '.mov', '.avi', '.mkv', '.webm', '.flv')):
@@ -212,7 +220,7 @@ def scan_directory(directory: str, use_cache: bool = True, include_dimensions: b
     # Cache the result
     if use_cache and media:
         # Use different cache keys for with/without dimensions
-        cache_suffix = "_with_dims" if include_dimensions else "_no_dims"
+        cache_suffix = CACHE_SUFFIX_WITH_DIMS if include_dimensions else CACHE_SUFFIX_NO_DIMS
         cache_key = cache_key_for_directory(directory) + cache_suffix
         directory_cache.set(cache_key, media)
         logger.debug(f"Cached scan result for: {directory} (dims={include_dimensions})")
@@ -245,7 +253,7 @@ def get_sorted_files(media_root: str, folder_path: str, sort_by: str = "default"
 
     # Check sorted cache first (except for random which should always be different)
     if use_cache and sort_by != "random":
-        cache_suffix = "_with_dims" if include_dimensions else "_no_dims"
+        cache_suffix = CACHE_SUFFIX_WITH_DIMS if include_dimensions else CACHE_SUFFIX_NO_DIMS
         cache_suffix += f"_sort_{sort_by}"  # Include sort type in cache key
         cache_key = cache_key_for_directory(folder_path) + cache_suffix
         cached_result = directory_cache.get(cache_key)
@@ -300,7 +308,7 @@ def get_sorted_files(media_root: str, folder_path: str, sort_by: str = "default"
 
         # Cache the sorted result (except for random)
         if use_cache and sort_by != "random" and media:
-            cache_suffix = "_with_dims" if include_dimensions else "_no_dims"
+            cache_suffix = CACHE_SUFFIX_WITH_DIMS if include_dimensions else CACHE_SUFFIX_NO_DIMS
             cache_suffix += f"_sort_{sort_by}"
             cache_key = cache_key_for_directory(folder_path) + cache_suffix
             directory_cache.set(cache_key, media)

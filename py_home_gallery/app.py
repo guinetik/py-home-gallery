@@ -11,6 +11,7 @@ from py_home_gallery.workers.thumbnail_worker import shutdown_thumbnail_worker
 from py_home_gallery.workers.preload import preload_all
 from py_home_gallery.utils.cache import setup_caches
 from py_home_gallery.utils.logger import configure_logging
+from py_home_gallery.constants import METADATA_CACHE_MULTIPLIER
 import os
 import atexit
 
@@ -43,11 +44,11 @@ def create_app(config):
     app.config['WORKER_ENABLED'] = config.worker_enabled
     app.config['WORKER_THREADS'] = config.worker_threads
     
-    # Initialize cache with config TTL (metadata cache gets 2x TTL)
+    # Initialize cache with config TTL (metadata cache gets 2x TTL by default)
     if config.cache_enabled:
         setup_caches(
             directory_ttl=config.cache_ttl,
-            metadata_ttl=config.cache_ttl * 2  # Metadata cached longer
+            metadata_ttl=config.cache_ttl * METADATA_CACHE_MULTIPLIER
         )
     
     # Register all route blueprints
@@ -78,10 +79,11 @@ def create_app(config):
             num_threads=config.worker_threads
         )
     
-    # Print configuration
-    print(f"Static folder configured at: {static_folder_path}")
-    print(f"Static URL path: /static")
-    print(f"Cache: {'Enabled' if config.cache_enabled else 'Disabled'}")
-    print(f"Background Workers: {config.worker_threads if config.worker_enabled else 'Disabled'}")
-    
+    # Log configuration
+    logger = get_logger(__name__)
+    logger.info(f"Static folder configured at: {static_folder_path}")
+    logger.info(f"Static URL path: /static")
+    logger.info(f"Cache: {'Enabled' if config.cache_enabled else 'Disabled'}")
+    logger.info(f"Background Workers: {config.worker_threads if config.worker_enabled else 'Disabled'}")
+
     return app

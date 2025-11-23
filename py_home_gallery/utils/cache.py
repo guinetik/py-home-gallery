@@ -11,6 +11,11 @@ import threading
 from typing import Optional, Any, Dict, Callable
 from functools import wraps
 from py_home_gallery.utils.logger import get_logger
+from py_home_gallery.constants import (
+    DEFAULT_CACHE_TTL,
+    CACHE_PREFIX_DIRECTORY,
+    CACHE_PREFIX_FILE,
+)
 
 logger = get_logger(__name__)
 
@@ -28,12 +33,12 @@ class SimpleCache:
         'value'
     """
     
-    def __init__(self, ttl_seconds: int = 300):
+    def __init__(self, ttl_seconds: int = DEFAULT_CACHE_TTL):
         """
         Initialize the cache.
-        
+
         Args:
-            ttl_seconds: Time to live for cached items in seconds (default: 300)
+            ttl_seconds: Time to live for cached items in seconds (default: from constants)
         """
         self._cache: Dict[str, tuple] = {}
         self._ttl = ttl_seconds
@@ -143,21 +148,21 @@ _directory_cache: Optional[SimpleCache] = None
 _metadata_cache: Optional[SimpleCache] = None
 
 
-def setup_caches(directory_ttl: int = 300, metadata_ttl: int = 600) -> None:
+def setup_caches(directory_ttl: int = DEFAULT_CACHE_TTL, metadata_ttl: int = DEFAULT_CACHE_TTL * 2) -> None:
     """
     Initialize global cache instances with specified TTL values.
-    
+
     Should be called once during application startup with config values.
-    
+
     Args:
-        directory_ttl: TTL for directory cache in seconds (default: 300)
-        metadata_ttl: TTL for metadata cache in seconds (default: 600)
+        directory_ttl: TTL for directory cache in seconds (default: from constants)
+        metadata_ttl: TTL for metadata cache in seconds (default: 2x directory TTL)
     """
     global _directory_cache, _metadata_cache
-    
+
     _directory_cache = SimpleCache(ttl_seconds=directory_ttl)
     _metadata_cache = SimpleCache(ttl_seconds=metadata_ttl)
-    
+
     logger.info(f"Caches initialized - Directory TTL: {directory_ttl}s, Metadata TTL: {metadata_ttl}s")
 
 
@@ -244,27 +249,27 @@ def cached(ttl: int = 300, cache_instance: Optional[SimpleCache] = None):
 def cache_key_for_directory(directory: str) -> str:
     """
     Generate a consistent cache key for a directory.
-    
+
     Args:
         directory: Directory path
-        
+
     Returns:
         str: Cache key
     """
-    return f"dir:{hashlib.md5(directory.encode()).hexdigest()}"
+    return f"{CACHE_PREFIX_DIRECTORY}{hashlib.md5(directory.encode()).hexdigest()}"
 
 
 def cache_key_for_file(filepath: str) -> str:
     """
     Generate a consistent cache key for a file.
-    
+
     Args:
         filepath: File path
-        
+
     Returns:
         str: Cache key
     """
-    return f"file:{hashlib.md5(filepath.encode()).hexdigest()}"
+    return f"{CACHE_PREFIX_FILE}{hashlib.md5(filepath.encode()).hexdigest()}"
 
 
 def invalidate_directory_cache(directory: str) -> None:

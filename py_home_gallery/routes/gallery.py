@@ -10,9 +10,11 @@ from py_home_gallery.media.scanner import list_subfolders, validate_and_get_fold
 from py_home_gallery.media.dimension_helper import add_dimensions_to_items
 from py_home_gallery.utils.pagination import paginate_items
 from py_home_gallery.media.utils import is_image, is_video
+from py_home_gallery.utils.logger import get_logger
 
 # Create a blueprint for gallery routes
 bp = Blueprint('gallery', __name__)
+logger = get_logger(__name__)
 
 
 def handle_gallery(folder=None, sort_by="default", media_type=None):
@@ -35,9 +37,9 @@ def handle_gallery(folder=None, sort_by="default", media_type=None):
     # Dimensions will be added later only for paginated items
     try:
         media = get_sorted_files(media_root, folder_path, sort_by=sort_by, include_dimensions=False)
-        print(f"Retrieved {len(media)} media files from {folder_path}")
+        logger.info(f"Retrieved {len(media)} media files from {folder_path}")
     except Exception as e:
-        print(f"Error getting files: {e}")
+        logger.error(f"Error getting files: {e}")
         return f"Error retrieving files: {str(e)}", 500
     
     # Filter by media type if specified
@@ -61,8 +63,8 @@ def handle_gallery(folder=None, sort_by="default", media_type=None):
     image_count = len([item for item in media if is_image(item['path'])])
     video_count = len([item for item in media if is_video(item['path'])])
     total_count = len(media)
-    
-    print(f"Media stats - Total: {total_count}, Images: {image_count}, Videos: {video_count}")
+
+    logger.debug(f"Media stats - Total: {total_count}, Images: {image_count}, Videos: {video_count}")
 
     # Render the template
     return render_template(
@@ -121,9 +123,9 @@ def random_gallery():
     # Get random files (never cached - always shuffles)
     try:
         media = get_sorted_files(media_root, folder_path, sort_by="random", include_dimensions=False, use_cache=False)
-        print(f"Retrieved {len(media)} media files for random shuffle")
+        logger.info(f"Retrieved {len(media)} media files for random shuffle")
     except Exception as e:
-        print(f"Error getting files: {e}")
+        logger.error(f"Error getting files: {e}")
         return f"Error retrieving files: {str(e)}", 500
 
     # Filter by media type if specified
@@ -202,7 +204,7 @@ def api_stats():
             'folder_count': folder_count
         })
     except Exception as e:
-        print(f"Error getting stats: {e}")
+        logger.error(f"Error getting stats: {e}")
         return jsonify({
             'total_files': 0,
             'image_count': 0,
