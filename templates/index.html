@@ -47,8 +47,9 @@
             backdrop-filter: saturate(180%) blur(20px);
             -webkit-backdrop-filter: saturate(180%) blur(20px);
             padding: 1rem 2rem;
-            box-shadow: 0 2px 20px var(--glass-shadow);
+            box-shadow: 0 4px 16px var(--glass-shadow);
             border-bottom: 1px solid var(--glass-border);
+            border-radius: 0 0 12px 12px;
             display: flex;
             align-items: center;
             gap: 1rem;
@@ -136,7 +137,7 @@
 
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 2rem;
             margin-bottom: 2rem;
         }
@@ -221,13 +222,17 @@
     </style>
 </head>
 <body>
-    <div class="nav-bar">
-        <img src="/static/logo.svg" alt="Logo" onerror="this.src='https://via.placeholder.com/50'; this.onerror='';">
-        <h1>Py Home Gallery</h1>
+    <nav class="nav-bar">
+        <a href="/">
+            <div class="logo">
+                <img src="/static/logo.svg" alt="Logo" onerror="this.src='https://via.placeholder.com/50'; this.onerror='';">
+                <span>Py Home Gallery</span>
+            </div>
+        </a>
         <div class="filter-buttons">
             <!-- Theme toggle will be injected here by theme.js -->
         </div>
-    </div>
+    </nav>
 
     <div class="stats-hero">
         <h2>Your Media Collection</h2>
@@ -254,10 +259,16 @@
 
     <div class="container">
         <div class="gallery-grid">
-            <!-- Row 1: Three cards -->
-            <a href="/gallery" class="gallery-card">
-                <span class="gallery-card-icon">📷</span>
+            <!-- Row 1: Four cards -->
+            <a href="/browse" class="gallery-card">
+                <span class="gallery-card-icon">📂</span>
                 <div class="gallery-card-title">Browse</div>
+                <div class="gallery-card-desc">Navigate through your media folders</div>
+            </a>
+
+            <a href="/gallery" class="gallery-card">
+                <span class="gallery-card-icon">🖼️</span>
+                <div class="gallery-card-title">Gallery</div>
                 <div class="gallery-card-desc">Explore your entire collection with classic pagination</div>
             </a>
 

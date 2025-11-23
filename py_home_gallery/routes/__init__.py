@@ -8,7 +8,7 @@ This package contains Flask route definitions for:
 - Metadata API
 """
 
-from py_home_gallery.routes import gallery, media, infinite, metadata
+from py_home_gallery.routes import gallery, media, infinite, metadata, browse
 
 # Redefine the register_routes function to use our blueprint modules
 def register_routes(app):
@@ -19,6 +19,7 @@ def register_routes(app):
     When SERVE_MEDIA is False, Nginx serves existing files first, Flask generates missing ones.
     """
     app.register_blueprint(gallery.bp)
+    app.register_blueprint(browse.bp)
     app.register_blueprint(infinite.bp)
     app.register_blueprint(metadata.bp)
     app.register_blueprint(media.bp)  # Always register for fallback
