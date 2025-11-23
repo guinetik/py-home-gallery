@@ -1,0 +1,86 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "py-home-gallery"
+version = "0.1.0"
+description = "A lightweight Flask-based media gallery server for browsing local media collections"
+authors = [
+    {name = "Guinetik", email = "guinetik@users.noreply.github.com"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: Flask",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Graphics :: Viewers",
+    "Topic :: Multimedia :: Video :: Display",
+]
+keywords = ["gallery", "media", "flask", "photos", "videos", "home-server"]
+
+dependencies = [
+    "Flask~=3.0.0",
+    "Pillow~=10.0.0",
+    "moviepy==1.0.3",
+    "imageio~=2.34.0",
+    "imageio-ffmpeg~=0.5.0",
+    "numpy~=1.26.0",
+    "decorator~=5.1.0",
+    "tqdm~=4.66.0",
+    "pydub~=0.25.0",
+    "opencv-python~=4.9.0",
+]
+
+[project.optional-dependencies]
+production = [
+    "waitress~=3.0.0",
+]
+dev = [
+    "pytest~=8.0.0",
+    "pytest-cov~=4.1.0",
+    "black~=24.0.0",
+    "flake8~=7.0.0",
+    "mypy~=1.8.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/guinetik/py-home-gallery"
+Repository = "https://github.com/guinetik/py-home-gallery"
+Issues = "https://github.com/guinetik/py-home-gallery/issues"
+Demo = "https://py-home-gallery.onrender.com/"
+
+[project.scripts]
+py-home-gallery = "py_home_gallery.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["py_home_gallery*"]
+exclude = ["tests*", "docs*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--verbose --cov=py_home_gallery --cov-report=term-missing"

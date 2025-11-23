@@ -2,7 +2,7 @@
 
 A lightweight, Flask-based media gallery server designed for browsing and viewing your local media collection across your home network. Perfect for viewing photos and videos from any device, including smart TVs.
 
-![Python](https://img.shields.io/badge/python-3.6+-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
 ![Flask](https://img.shields.io/badge/flask-2.0+-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
 
@@ -49,7 +49,7 @@ Demo is on [https://py-home-gallery.onrender.com/](https://py-home-gallery.onren
 
 ### Prerequisites
 
-- Python 3.6+
+- Python 3.10+
 - FFmpeg installed and accessible in PATH (required for video thumbnail generation)
 
 ### Setup
@@ -62,19 +62,32 @@ Demo is on [https://py-home-gallery.onrender.com/](https://py-home-gallery.onren
 
 2. Install dependencies:
    ```bash
+   # Option 1: Install via pip (recommended)
+   pip install -e .
+
+   # Option 2: Install from requirements.txt
    pip install -r requirements.txt
+
+   # For production deployment, also install waitress:
+   pip install -e ".[production]"
    ```
 
 3. Run the application with your media directory:
    ```bash
-   # Basic usage with just the media directory
+   # If installed via pip:
+   py-home-gallery --media-dir "/path/to/your/media"
+
+   # Or run directly:
    python run.py --media-dir "/path/to/your/media"
-   
+
+   # Or as a module:
+   python -m py_home_gallery --media-dir "/path/to/your/media"
+
    # Specify a custom thumbnail directory
-   python run.py --media-dir "/path/to/your/media" --thumbnail-dir "/custom/path/for/thumbnails"
-   
+   py-home-gallery --media-dir "/path/to/your/media" --thumbnail-dir "/custom/path/for/thumbnails"
+
    # Example with all options
-   python run.py --media-dir "/home/guinetik/Media" --thumbnail-dir "/home/guinetik/gallery-thumbs" --port 8080 --items-per-page 100
+   py-home-gallery --media-dir "/home/guinetik/Media" --thumbnail-dir "/home/guinetik/gallery-thumbs" --port 8080 --items-per-page 100
    ```
 
 4. The application will automatically create a thumbnail directory in your home folder:

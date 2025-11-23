@@ -8,7 +8,7 @@ This guide is for developers who want to contribute to Py Home Gallery. It cover
 
 ### Prerequisites
 
-- Python 3.6+
+- Python 3.10+
 - FFmpeg installed and in PATH
 - Git
 
