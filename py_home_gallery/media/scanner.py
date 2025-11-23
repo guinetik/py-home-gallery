@@ -155,9 +155,16 @@ def scan_directory(directory: str, use_cache: bool = True, include_dimensions: b
 
                     rel_path = os.path.relpath(full_path, start=directory)
 
+                    # Get file modification time for sorting
+                    try:
+                        mtime = os.path.getmtime(full_path)
+                    except (OSError, IOError):
+                        mtime = 0  # Default if we can't read mtime
+
                     # Build media info dict
                     media_info = {
                         'path': rel_path,
+                        'mtime': mtime,  # Cache mtime for fast sorting
                     }
 
                     # Get media dimensions if requested (slower but more accurate)
@@ -228,13 +235,23 @@ def get_sorted_files(media_root: str, folder_path: str, sort_by: str = "default"
         List[Dict[str, Any]]: List of media info dictionaries with path, thumbnail, width, height
 
     Sorting options:
-        - "random": Randomize order
-        - "new": Sort by newest files first
-        - "default": No specific order
+        - "random": Randomize order (never cached, always random)
+        - "new": Sort by newest files first (cached)
+        - "default": No specific order (cached)
     """
     import random
 
     logger.info(f"Getting sorted files from {folder_path} with sort_by={sort_by}")
+
+    # Check sorted cache first (except for random which should always be different)
+    if use_cache and sort_by != "random":
+        cache_suffix = "_with_dims" if include_dimensions else "_no_dims"
+        cache_suffix += f"_sort_{sort_by}"  # Include sort type in cache key
+        cache_key = cache_key_for_directory(folder_path) + cache_suffix
+        cached_result = directory_cache.get(cache_key)
+        if cached_result is not None:
+            logger.info(f"Using cached sorted result for: {folder_path} (sort={sort_by}, {len(cached_result)} files)")
+            return cached_result
 
     try:
         # Get media files from the specified folder (with caching)
@@ -247,14 +264,14 @@ def get_sorted_files(media_root: str, folder_path: str, sort_by: str = "default"
             random.shuffle(media)
             logger.debug(f"Randomized {len(media)} media files")
         elif sort_by == "new":
-            # Use full paths for sorting by modification time to avoid errors
+            # Use cached mtime for fast sorting (no filesystem calls!)
             try:
                 media = sorted(
                     media,
-                    key=lambda x: os.path.getmtime(os.path.join(folder_path, x['path'])),
+                    key=lambda x: x.get('mtime', 0),
                     reverse=True
                 )
-                logger.debug(f"Sorted {len(media)} media files by modification time")
+                logger.debug(f"Sorted {len(media)} media files by cached modification time")
             except Exception as e:
                 logger.error(f"Error sorting files by modification time: {e}")
                 # Continue with unsorted media
@@ -280,6 +297,14 @@ def get_sorted_files(media_root: str, folder_path: str, sort_by: str = "default"
 
             media = adjusted_media
             logger.debug(f"Adjusted media paths for subfolder: {rel_folder}")
+
+        # Cache the sorted result (except for random)
+        if use_cache and sort_by != "random" and media:
+            cache_suffix = "_with_dims" if include_dimensions else "_no_dims"
+            cache_suffix += f"_sort_{sort_by}"
+            cache_key = cache_key_for_directory(folder_path) + cache_suffix
+            directory_cache.set(cache_key, media)
+            logger.debug(f"Cached sorted result for: {folder_path} (sort={sort_by})")
 
         return media
 
