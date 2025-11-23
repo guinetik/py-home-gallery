@@ -3,21 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Dashboard</title>
+    <title>Py Home Gallery</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/theme.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-page);
+            min-height: 100vh;
+            padding: 0;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Sleek gradient overlay - blue accent for dark, subtle for light */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, rgba(10, 132, 255, 0.15), transparent 50%),
+                        radial-gradient(circle at bottom left, rgba(10, 132, 255, 0.1), transparent 50%);
+            opacity: 1;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        [data-theme="light"] body::before {
+            background: radial-gradient(circle at top right, rgba(10, 132, 255, 0.08), transparent 50%),
+                        radial-gradient(circle at bottom left, rgba(10, 132, 255, 0.05), transparent 50%);
+        }
+
+        .nav-bar {
+            background: var(--glass-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px var(--glass-shadow);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-height: 72px;
+        }
+
+        .nav-bar img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-bar h1 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .nav-bar .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .stats-hero {
+            background: var(--glass-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            margin: 2rem auto;
+            max-width: 1200px;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .stats-hero h2 {
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 0 2px 10px var(--glass-shadow);
+        }
+
+        .stats-hero p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-shadow: 0 2px 10px var(--glass-shadow);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem 2rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .gallery-card {
+            background: var(--glass-bg);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid var(--glass-border);
+            box-shadow: 0 4px 20px var(--glass-shadow);
+            text-decoration: none;
+            display: block;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px var(--glass-shadow);
+            border-color: var(--primary);
+        }
+
+        .gallery-card-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .gallery-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-card-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .full-width-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary), rgba(10, 132, 255, 0.6));
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .full-width-card:hover {
+            box-shadow: 0 12px 40px rgba(10, 132, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .full-width-card .gallery-card-title {
+            color: white;
+        }
+
+        .full-width-card .gallery-card-desc {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-hero h2 {
+                font-size: 2rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .nav-bar {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="logo" style="justify-content: center; margin: 0;">
-            <img src="/static/logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/80'; this.onerror='';" style="height: 80px;">
-            <h1>Media Dashboard</h1>
+    <div class="nav-bar">
+        <img src="/static/logo.svg" alt="Logo" onerror="this.src='https://via.placeholder.com/50'; this.onerror='';">
+        <h1>Py Home Gallery</h1>
+        <div class="filter-buttons">
+            <!-- Theme toggle will be injected here by theme.js -->
         </div>
-    </header>
-    <div class="buttons">
-        <a href="/gallery" class="button">Default Gallery</a>
-        <a href="/random" class="button random">Random Gallery</a>
-        <a href="/new" class="button newest">Newest First</a>
-        <a href="/infinite" class="button infinite">Infinite Scroll</a>
     </div>
+
+    <div class="stats-hero">
+        <h2>Your Media Collection</h2>
+        <p>Browse, discover, and enjoy your photos and videos</p>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number" id="totalFiles">-</span>
+                <span class="stat-label">Total Files</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="imageCount">-</span>
+                <span class="stat-label">Images</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="videoCount">-</span>
+                <span class="stat-label">Videos</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="folderCount">-</span>
+                <span class="stat-label">Folders</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="gallery-grid">
+            <!-- Row 1: Three cards -->
+            <a href="/gallery" class="gallery-card">
+                <span class="gallery-card-icon">📷</span>
+                <div class="gallery-card-title">Browse</div>
+                <div class="gallery-card-desc">Explore your entire collection with classic pagination</div>
+            </a>
+
+            <a href="/random" class="gallery-card">
+                <span class="gallery-card-icon">🎲</span>
+                <div class="gallery-card-title">Shuffle</div>
+                <div class="gallery-card-desc">Discover random media from your library</div>
+            </a>
+
+            <a href="/new" class="gallery-card">
+                <span class="gallery-card-icon">⭐</span>
+                <div class="gallery-card-title">Newest</div>
+                <div class="gallery-card-desc">See your most recently added media first</div>
+            </a>
+
+            <!-- Row 2: Full width card -->
+            <a href="/infinite" class="gallery-card full-width-card">
+                <span class="gallery-card-icon">∞</span>
+                <div class="gallery-card-title">Infinite Scroll</div>
+                <div class="gallery-card-desc">Endless browsing experience - new content loads as you scroll</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Fetch stats from API
+        fetch('/api/stats')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalFiles').textContent = data.total_files.toLocaleString();
+                document.getElementById('imageCount').textContent = data.image_count.toLocaleString();
+                document.getElementById('videoCount').textContent = data.video_count.toLocaleString();
+                document.getElementById('folderCount').textContent = data.folder_count.toLocaleString();
+            })
+            .catch(error => {
+                console.error('Error fetching stats:', error);
+                // Set placeholders on error
+                document.getElementById('totalFiles').textContent = '0';
+                document.getElementById('imageCount').textContent = '0';
+                document.getElementById('videoCount').textContent = '0';
+                document.getElementById('folderCount').textContent = '0';
+            });
+    </script>
 </body>
 </html>
