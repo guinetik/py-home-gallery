@@ -31,9 +31,10 @@ def handle_gallery(folder=None, sort_by="default", media_type=None):
     if not folder_path:
         return "Folder not found", 404
     
-    # Get sorted files from the specified folder
+    # Get sorted files from the specified folder (without dimensions for speed)
+    # Dimensions will be added later only for paginated items
     try:
-        media = get_sorted_files(media_root, folder_path, sort_by=sort_by)
+        media = get_sorted_files(media_root, folder_path, sort_by=sort_by, include_dimensions=False)
         print(f"Retrieved {len(media)} media files from {folder_path}")
     except Exception as e:
         print(f"Error getting files: {e}")
@@ -100,11 +101,65 @@ def gallery():
 @bp.route('/random')
 def random_gallery():
     """
-    Randomized gallery view with optional folder filtering.
+    Randomized gallery view with shuffle button (no pagination).
+    Shows a fixed number of random items that can be reshuffled.
     """
-    folder = request.args.get('folder')  # Optional folder query parameter
-    media_type = request.args.get('display')  # Get display filter parameter
-    return handle_gallery(folder=folder, sort_by="random", media_type=media_type)
+    import time
+
+    media_root = current_app.config['MEDIA_ROOT']
+    thumbnail_dir = current_app.config['THUMBNAIL_DIR']
+    placeholder_url = current_app.config['PLACEHOLDER_URL']
+
+    folder = request.args.get('folder')
+    media_type = request.args.get('display')
+
+    # Validate the folder path
+    folder_path = validate_and_get_folder_path(media_root, folder)
+    if not folder_path:
+        return "Folder not found", 404
+
+    # Get random files (never cached - always shuffles)
+    try:
+        media = get_sorted_files(media_root, folder_path, sort_by="random", include_dimensions=False, use_cache=False)
+        print(f"Retrieved {len(media)} media files for random shuffle")
+    except Exception as e:
+        print(f"Error getting files: {e}")
+        return f"Error retrieving files: {str(e)}", 500
+
+    # Filter by media type if specified
+    if media_type == 'images':
+        media = [item for item in media if is_image(item['path'])]
+    elif media_type == 'videos':
+        media = [item for item in media if is_video(item['path'])]
+
+    # Show first 100 random items (no pagination)
+    max_items = 100
+    random_media = media[:max_items]
+
+    # Extract dimensions only for items we're showing
+    add_dimensions_to_items(random_media, media_root, thumbnail_dir)
+
+    # List all subfolders for dropdown
+    folders = list_subfolders(media_root)
+
+    # Count different media types for the UI
+    image_count = len([item for item in media if is_image(item['path'])])
+    video_count = len([item for item in media if is_video(item['path'])])
+    total_count = len(media)
+
+    # Render random template with shuffle button
+    return render_template(
+        'random.html',
+        media_files=random_media,
+        placeholder=placeholder_url,
+        folders=folders,
+        current_folder=folder,
+        media_type=media_type,
+        image_count=image_count,
+        video_count=video_count,
+        total_count=total_count,
+        timestamp=int(time.time())  # For cache busting
+    )
 
 
 @bp.route('/new')
@@ -115,3 +170,43 @@ def new_gallery():
     folder = request.args.get('folder')  # Optional folder query parameter
     media_type = request.args.get('display')  # Get display filter parameter
     return handle_gallery(folder=folder, sort_by="new", media_type=media_type)
+
+
+@bp.route('/api/stats')
+def api_stats():
+    """
+    API endpoint that returns media collection statistics as JSON.
+    Used by the home page to display stats in the hero section.
+    """
+    from flask import jsonify
+
+    media_root = current_app.config['MEDIA_ROOT']
+
+    try:
+        # Get all media files (use cache for speed)
+        media = get_sorted_files(media_root, media_root, sort_by="default", include_dimensions=False)
+
+        # Count by type
+        image_count = len([item for item in media if is_image(item['path'])])
+        video_count = len([item for item in media if is_video(item['path'])])
+        total_count = len(media)
+
+        # Count folders
+        folders = list_subfolders(media_root)
+        folder_count = len(folders)
+
+        return jsonify({
+            'total_files': total_count,
+            'image_count': image_count,
+            'video_count': video_count,
+            'folder_count': folder_count
+        })
+    except Exception as e:
+        print(f"Error getting stats: {e}")
+        return jsonify({
+            'total_files': 0,
+            'image_count': 0,
+            'video_count': 0,
+            'folder_count': 0,
+            'error': str(e)
+        }), 500

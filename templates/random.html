@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Gallery</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/theme.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+    <script src="/static/gallery.js"></script>
+    <script src="/static/metadata.js" defer></script>
+</head>
+<body>
+    <nav>
+        <a href="/">
+			<div class="logo">
+				<img src="/static/logo.svg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'; this.onerror='';">
+				<span>Random Gallery</span>
+			</div>
+		</a>
+        <div class="filter-buttons">
+			<a href="{{ request.path }}?{% if current_folder %}folder={{ current_folder }}&{% endif %}display=all&t={{ timestamp }}" class="filter-btn">
+                <button class="{% if not media_type or media_type == 'all' %}filter-active{% endif %}">
+                    All ({{ total_count }})
+                </button>
+            </a>
+			<a href="{{ request.path }}?{% if current_folder %}folder={{ current_folder }}&{% endif %}display=videos&t={{ timestamp }}" class="filter-btn">
+                <button class="{% if media_type == 'videos' %}filter-active{% endif %}">
+                    Videos ({{ video_count }})
+                </button>
+            </a>
+			<a href="{{ request.path }}?{% if current_folder %}folder={{ current_folder }}&{% endif %}display=images&t={{ timestamp }}" class="filter-btn">
+                <button class="{% if media_type == 'images' %}filter-active{% endif %}">
+                    Images ({{ image_count }})
+                </button>
+            </a>
+			<select id="folder-dropdown" onchange="navigateToFolder(this.value)">
+				<option value="">All Folders</option>
+				{% for folder in folders %}
+				<option value="{{ folder }}" {% if folder == current_folder %}selected{% endif %}>
+					{{ folder }}
+				</option>
+				{% endfor %}
+			</select>
+
+            <!-- Shuffle Button -->
+            <a href="javascript:shuffleGallery()" class="filter-btn" style="margin-left: auto;">
+                <button class="shuffle-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: bold;">
+                    🔀 Shuffle
+                </button>
+            </a>
+		</div>
+	<script>
+        function shuffleGallery() {
+            const params = new URLSearchParams(window.location.search);
+            // Add timestamp to force new shuffle
+            params.set('t', Date.now());
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+
+		function navigateToFolder(folder) {
+            const params = new URLSearchParams(window.location.search);
+
+            // Preserve the display parameter if it exists
+            const display = params.get('display');
+
+            // Reset parameters
+            params.delete('folder');
+            params.delete('display');
+            params.delete('t');
+
+            // Add folder parameter if selected
+            if (folder) {
+                params.set('folder', folder);
+            }
+
+            // Restore display parameter if it was set
+            if (display) {
+                params.set('display', display);
+            }
+
+            // Add timestamp for new shuffle
+            params.set('t', Date.now());
+
+            // Navigate to the new URL
+            window.location.href = `${window.location.pathname}?${params.toString()}`;
+        }
+	</script>
+    </nav>
+
+    <!-- Initial Loading Spinner -->
+    <div class="initial-loading" id="initialLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">Shuffling...</div>
+    </div>
+
+    <div class="grid">
+        <div class="grid-sizer"></div>
+        {% for item in media_files %}
+            {% if item.path.endswith('.mp4') or item.path.endswith('.mov') or item.path.endswith('.avi') or item.path.endswith('.mkv') %}
+                <div class="grid-item video-item"
+                     style="aspect-ratio: {{ item.width }} / {{ item.height }};">
+                    <a href="/media/{{ item.path }}" class="glightbox" data-gallery="gallery" data-type="video">
+                        <img src="{{ item.thumbnail if item.thumbnail else placeholder }}"
+                             alt="Video Thumbnail"
+                             width="{{ item.width }}"
+                             height="{{ item.height }}">
+                    </a>
+                </div>
+            {% else %}
+                <div class="grid-item image-item"
+                     style="aspect-ratio: {{ item.width }} / {{ item.height }};">
+                    <a href="/media/{{ item.path }}" class="glightbox" data-gallery="gallery">
+                        <img src="{{ item.thumbnail }}"
+                             alt="Image"
+                             width="{{ item.width }}"
+                             height="{{ item.height }}">
+                    </a>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- No pagination for random - just shuffle button -->
+    <div class="pagination" style="text-align: center; padding: 2em;">
+        <p style="color: #666; margin-bottom: 1em;">
+            Showing {{ media_files|length }} random items
+        </p>
+        <button onclick="shuffleGallery()" class="shuffle-btn" style="padding: 1em 2em; font-size: 1.1em; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-weight: bold;">
+            🔀 Shuffle Again
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize gallery using shared helper
+            initializeGallery();
+            // All setup (Isotope, GLightbox, spinner hiding, resize handler) is done!
+        });
+    </script>
+</body>
+</html>
