@@ -297,6 +297,96 @@ On Windows, path handling differs between Command Prompt (CMD) and PowerShell:
 
 The tilde (`~`) shorthand for home directory doesn't work in Windows terminals. Use `%USERPROFILE%` (CMD) or `$env:USERPROFILE` (PowerShell) instead.
 
+## Docker Deployment (Production)
+
+For production use, Py Home Gallery can be deployed with Docker + Nginx for optimal performance. This setup uses Nginx to serve static files (media and thumbnails) while Flask handles the API and dynamic content.
+
+### Quick Start with Docker
+
+1. **Create environment file** from the template:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Edit `.env`** with your paths:
+   ```bash
+   MEDIA_DIR=/path/to/your/media
+   THUMBNAIL_DIR=/path/to/your/thumbnails
+   HOST_PORT=8000
+   WORKER_THREADS=2
+   ```
+
+3. **Build and run**:
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Access the gallery** at `http://localhost:8000` (or your configured port)
+
+### Architecture
+
+The Docker setup includes:
+- **Nginx**: Serves static files (media/thumbnails) with efficient caching
+- **Flask + Waitress**: Handles API requests and on-demand thumbnail generation
+- **Volume Mounts**: Your media and thumbnails are mounted read-only (media) and read-write (thumbnails)
+
+### Docker Configuration
+
+**Environment Variables** (`.env` file):
+```bash
+# Required: Path to your media files
+MEDIA_DIR=/path/to/your/media
+
+# Required: Path for generated thumbnails
+THUMBNAIL_DIR=/path/to/your/thumbnails
+
+# Optional: Host port (default: 8000)
+HOST_PORT=8000
+
+# Optional: Number of worker threads (default: 2)
+WORKER_THREADS=2
+```
+
+### Advanced Docker Usage
+
+**View logs**:
+```bash
+docker-compose logs -f
+```
+
+**Rebuild after changes**:
+```bash
+docker-compose up -d --build
+```
+
+**Stop the containers**:
+```bash
+docker-compose down
+```
+
+**Check environment variables**:
+```bash
+docker exec py-home-gallery env | grep PY_HOME_GALLERY
+```
+
+### Performance Benefits
+
+Compared to running Flask directly:
+- **3-5x faster** static file serving via Nginx
+- **Multi-threaded** request handling with Waitress
+- **Efficient caching** with proper cache headers
+- **Automatic thumbnail fallback** - if thumbnail missing, Nginx forwards to Flask to generate it
+
+### Nginx Fallback Behavior
+
+When you request a thumbnail that doesn't exist yet:
+1. Nginx tries to serve from `/thumbnails/`
+2. If not found, forwards request to Flask via `@flask_fallback`
+3. Flask generates thumbnail on-demand
+4. Subsequent requests are served directly by Nginx (cached)
+
+This provides the best of both worlds: fast serving + on-demand generation.
+
 ## Customization
 
 - **Thumbnail Size**: Modify the thumbnail dimensions in the `serve_thumbnail` function

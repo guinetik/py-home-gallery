@@ -1,0 +1,59 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info
+dist
+build
+venv
+env
+.venv
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Documentation
+*.md
+!README.md
+docs/
+demo.gif
+screenshot_*.png
+image.png
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.example
+
+# Local development
+run.ps1
+samplegallery/
+media/
+thumbnails/
+
+# Test files
+test_*.py
+tests/
+
+# Cache
+.cache
+.pytest_cache
+.ruff_cache
+
+# Context files
+CONTEXT.md
+llm_docs

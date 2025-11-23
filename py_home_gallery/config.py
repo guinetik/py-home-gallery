@@ -35,6 +35,9 @@ class Config:
         # Media serving settings
         self.serve_media = os.environ.get('PY_HOME_GALLERY_SERVE_MEDIA', 'true').lower() == 'true'
 
+        # Production mode settings
+        self.production = os.environ.get('PY_HOME_GALLERY_PRODUCTION', 'false').lower() == 'true'
+
         # Logging settings
         self.log_level = os.environ.get('PY_HOME_GALLERY_LOG_LEVEL', 'INFO').upper()
         self.log_to_file = os.environ.get('PY_HOME_GALLERY_LOG_TO_FILE', 'true').lower() == 'true'
@@ -59,8 +62,15 @@ class Config:
         self.cache_enabled = not parsed_args.no_cache
         self.worker_enabled = not parsed_args.no_worker
 
-        # Media serving settings
-        self.serve_media = not parsed_args.no_serve_media
+        # Media serving settings (only override if flag was explicitly passed)
+        if parsed_args.no_serve_media:
+            self.serve_media = False
+        # else: keep env var value
+
+        # Production mode settings (only override if flag was explicitly passed)
+        if parsed_args.production:
+            self.production = True
+        # else: keep env var value
 
         # Logging settings
         self.log_level = parsed_args.log_level
@@ -164,6 +174,13 @@ class Config:
         )
 
         parser.add_argument(
+            '--production',
+            action='store_true',
+            help='Run in production mode using Waitress WSGI server (requires: pip install waitress). '
+                 'ENV: PY_HOME_GALLERY_PRODUCTION'
+        )
+
+        parser.add_argument(
             '--log-level',
             type=str,
             default=self.log_level,
@@ -218,6 +235,7 @@ class Config:
         print(f"Items Per Page: {self.items_per_page}")
         print(f"Host: {self.host}")
         print(f"Port: {self.port}")
+        print(f"Production Mode: {self.production}")
         print(f"Serve Media: {self.serve_media}")
         print(f"Cache Enabled: {self.cache_enabled} (TTL: {self.cache_ttl}s)")
         print(f"Background Workers: {self.worker_threads if self.worker_enabled else 'Disabled'}")

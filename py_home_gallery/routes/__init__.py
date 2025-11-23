@@ -15,16 +15,16 @@ def register_routes(app):
     """
     Register all route blueprints with the Flask application.
 
-    If SERVE_MEDIA is False, the media blueprint will not be registered,
-    allowing an external server (like Nginx) to serve media files.
+    Media routes are always registered as fallback for Nginx (on-demand thumbnail generation).
+    When SERVE_MEDIA is False, Nginx serves existing files first, Flask generates missing ones.
     """
     app.register_blueprint(gallery.bp)
     app.register_blueprint(infinite.bp)
     app.register_blueprint(metadata.bp)
+    app.register_blueprint(media.bp)  # Always register for fallback
 
-    # Conditionally register media serving routes
+    # Just informational message
     if app.config.get('SERVE_MEDIA', True):
-        app.register_blueprint(media.bp)
-        print("✓ Flask serving media files (use --no-serve-media to disable)")
+        print("✓ Flask serving all media files directly")
     else:
-        print("✓ Media serving disabled - expecting external server (Nginx/etc.)")
+        print("✓ Nginx serving media (Flask fallback for missing thumbnails)")

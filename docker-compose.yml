@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  gallery:
+    build: .
+    container_name: py-home-gallery
+    expose:
+      # Internal port only, not exposed to host
+      - "5000"
+    volumes:
+      # Mount media and thumbnail directories from host
+      - ${MEDIA_DIR}:/media:ro  # Read-only for safety
+      - ${THUMBNAIL_DIR}:/thumbnails
+      # Optional: Mount logs directory
+      - ./logs:/app/logs
+    environment:
+      # Application configuration
+      - PY_HOME_GALLERY_MEDIA_DIR=/media
+      - PY_HOME_GALLERY_THUMB_DIR=/thumbnails
+      - PY_HOME_GALLERY_HOST=0.0.0.0
+      - PY_HOME_GALLERY_PORT=5000
+      - PY_HOME_GALLERY_PRODUCTION=true
+      - PY_HOME_GALLERY_SERVE_MEDIA=false  # Nginx serves media files
+
+      # Optional: Override via .env file
+      - PY_HOME_GALLERY_ITEMS_PER_PAGE=${ITEMS_PER_PAGE:-50}
+      - PY_HOME_GALLERY_CACHE_ENABLED=${CACHE_ENABLED:-true}
+      - PY_HOME_GALLERY_CACHE_TTL=${CACHE_TTL:-300}
+      - PY_HOME_GALLERY_WORKER_ENABLED=${WORKER_ENABLED:-true}
+      - PY_HOME_GALLERY_WORKER_THREADS=${WORKER_THREADS:-2}
+      - PY_HOME_GALLERY_LOG_LEVEL=${LOG_LEVEL:-INFO}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  nginx:
+    image: nginx:alpine
+    container_name: py-home-gallery-nginx
+    ports:
+      # Expose Nginx to host on configured port
+      - "${HOST_PORT:-8000}:80"
+    volumes:
+      # Nginx configuration
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      # Media and thumbnails (read-only)
+      - ${MEDIA_DIR}:/media:ro
+      - ${THUMBNAIL_DIR}:/thumbnails:ro
+    depends_on:
+      - gallery
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
