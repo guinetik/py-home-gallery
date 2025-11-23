@@ -32,10 +32,10 @@ def preload_thumbnails(media_root: str, thumbnail_dir: str, num_threads: int = 2
         try:
             logger.info("Starting thumbnail preload...")
             
-            # Scan directory for all media files
-            logger.info(f"Scanning directory: {media_root}")
-            # Skip dimension extraction for faster scanning - we only need file paths
-            media_files = scan_directory(media_root, use_cache=False, include_dimensions=False)
+            # Get media files from cache (already warmed up during startup)
+            logger.info(f"Getting media files from cache: {media_root}")
+            # Use cached results from warmup - no need to scan again
+            media_files = scan_directory(media_root, use_cache=True, include_dimensions=False)
             
             # Filter video files
             video_files = [

@@ -24,9 +24,15 @@ function initializeIsotope(gridSelector) {
         }
     });
 
-    // Re-layout when images load (minor adjustments only)
-    imagesLoaded(grid, function() {
-        console.log('Images loaded, refining layout');
+    // Re-layout as EACH image loads to prevent overlaps
+    const imgLoad = imagesLoaded(grid);
+    imgLoad.on('progress', function() {
+        // Layout after each image loads
+        iso.layout();
+    });
+
+    imgLoad.on('always', function() {
+        console.log('All images loaded, final layout');
         iso.layout();
     });
 
@@ -103,6 +109,9 @@ function initializeGallery(options) {
     const lightboxSelector = options.lightboxSelector || '.glightbox';
     const spinnerId = options.spinnerId || 'initialLoading';
 
+    // Get grid element
+    const grid = document.querySelector(gridSelector);
+
     // Initialize Isotope
     const iso = initializeIsotope(gridSelector);
 
@@ -117,5 +126,5 @@ function initializeGallery(options) {
         setupResizeHandler(iso);
     }
 
-    return { iso, lightbox };
+    return { iso, lightbox, grid };
 }

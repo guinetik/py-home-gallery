@@ -44,11 +44,11 @@ def infinite_gallery() -> str:
             media_files = scan_directory(media_root, use_cache=True, include_dimensions=False)
             logger.info(f"Found {len(media_files)} media files")
 
-        # Sort by newest first with error handling
+        # Sort by newest first using cached mtime (no filesystem calls!)
         try:
             sorted_files = sorted(
                 media_files,
-                key=lambda x: os.path.getmtime(os.path.join(media_root, x['path'])),
+                key=lambda x: x.get('mtime', 0),
                 reverse=True
             )
         except Exception as e:

@@ -175,3 +175,4 @@ cython_debug/
 
 CONTEXT.md
 llm_docs
+run.ps1

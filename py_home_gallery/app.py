@@ -55,14 +55,27 @@ def create_app(config):
     
     # Register cleanup handler for worker shutdown
     atexit.register(shutdown_thumbnail_worker)
-    
-    # Preload resources (cache, thumbnails) if workers are enabled
+
+    # Preload cache if enabled (independent of workers)
+    if config.cache_enabled:
+        from py_home_gallery.media.scanner import scan_directory
+        from py_home_gallery.utils.logger import get_logger
+        logger = get_logger(__name__)
+        logger.info("Warming up directory cache...")
+        try:
+            # Scan without dimensions for faster startup, dimensions added per-page later
+            files = scan_directory(config.media_dir, use_cache=True, include_dimensions=False)
+            logger.info(f"✓ Cache warmed: {len(files)} files indexed")
+        except Exception as e:
+            logger.error(f"Error warming cache: {e}")
+
+    # Preload thumbnails in background if workers enabled
     if config.worker_enabled:
-        preload_all(
+        from py_home_gallery.workers.preload import preload_thumbnails
+        preload_thumbnails(
             media_root=config.media_dir,
             thumbnail_dir=config.thumbnail_dir,
-            worker_threads=config.worker_threads,
-            cache_enabled=config.cache_enabled
+            num_threads=config.worker_threads
         )
     
     # Print configuration
@@ -70,8 +83,5 @@ def create_app(config):
     print(f"Static URL path: /static")
     print(f"Cache: {'Enabled' if config.cache_enabled else 'Disabled'}")
     print(f"Background Workers: {config.worker_threads if config.worker_enabled else 'Disabled'}")
-    
-    if config.worker_enabled:
-        print(f"✓ Thumbnail preload started in background")
     
     return app

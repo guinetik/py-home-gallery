@@ -67,20 +67,24 @@ def setup_logger(
 def get_logger(name: str = 'py_home_gallery') -> logging.Logger:
     """
     Get an existing logger or create a new one with configured settings.
-    
+
     Args:
         name: Name of the logger
-        
+
     Returns:
         logging.Logger: Logger instance
     """
     logger = logging.getLogger(name)
-    
-    # If logger has no handlers, set it up with global config
-    if not logger.handlers:
+
+    # Only configure handlers for the root logger
+    # Child loggers will propagate to parent (no duplicate handlers)
+    if name == 'py_home_gallery' and not logger.handlers:
         log_file = f"{_log_dir}/app.log" if _log_to_file else None
         setup_logger(name, level=_log_level, log_file=log_file, console=True)
-    
+
+    # Child loggers just inherit from parent
+    logger.setLevel(_log_level)
+
     return logger
 
 
