@@ -10,9 +10,12 @@ A lightweight, Flask-based media gallery server designed for browsing and viewin
 
 ### Core Features
 
-- **Multiple Gallery Views**: Default, random order, and newest-first sorting options
+- **3D Cover Flow Browse**: iPod-inspired carousel for navigating folders with keyboard, mouse, and touch support
+- **Living Mosaic Background**: Dynamic grid of photos that auto-shuffles for a screensaver effect
+- **Multiple Gallery Views**: Browse, Gallery, Random, Newest, and Infinite scroll options
+- **Dark/Light Theme Toggle**: Site-wide theme system with localStorage persistence
 - **Automatic Video Thumbnails**: Generates thumbnails for videos using the middle frame
-- **Responsive Grid Layout**: Using Isotope.js for masonry-style layout
+- **Responsive Grid Layout**: Square-cornered design with grid-aligned elements across all resolutions
 - **Media Filtering**: Filter by media type (video/images) and folders
 - **Pagination**: Standard page-based navigation for better performance
 - **Infinite Scrolling**: Alternative view with dynamic content loading
@@ -85,11 +88,13 @@ Demo is on [https://py-home-gallery.onrender.com/](https://py-home-gallery.onren
 
 ## Usage
 
-- **Main Dashboard**: Navigate to the home page to choose your gallery view
-- **Default Gallery**: Standard gallery view with pagination
-- **Random Gallery**: Same content but in randomized order
-- **Newest First**: Gallery sorted by most recent files
-- **Infinite Scrolling**: Continuously loads more content as you scroll
+- **Main Dashboard**: Navigate to the home page with live mosaic background to choose your view
+- **Browse**: 3D Cover Flow carousel for browsing folders (keyboard arrows, mouse wheel, touch swipe, or click)
+- **Gallery**: Standard masonry grid view with pagination
+- **Shuffle**: Randomized gallery view
+- **Newest**: Gallery sorted by most recent files first
+- **Infinite Scroll**: Continuously loads more content as you scroll
+- **Theme Toggle**: Switch between dark and light modes (top right corner)
 - **Folder Dropdown**: Filter media by folder
 - **Media Type Filters**: View only images or only videos
 
@@ -97,11 +102,18 @@ Demo is on [https://py-home-gallery.onrender.com/](https://py-home-gallery.onren
 
 Py Home Gallery scans your media directory for images and videos. For videos, it automatically generates thumbnails using FFmpeg/moviepy, which are stored in the thumbnail directory. The application serves both the thumbnails and the original media files through a Flask web server.
 
-The gallery uses modern web technologies like Isotope.js for layout, GLightbox for the media viewer, and supports both traditional pagination and infinite scrolling for different viewing preferences.
+The gallery features:
+- **Homepage**: Living mosaic background that auto-shuffles random thumbnails every 10 seconds with grid-aligned content cards
+- **Browse**: 3D Cover Flow carousel with keyboard, mouse wheel, touch swipe, and click navigation
+- **Gallery Views**: Isotope.js masonry layout with multiple sorting options (default, random, newest, infinite scroll)
+- **Media Viewer**: GLightbox for full-screen image and video playback
+- **Responsive Design**: Grid-aligned square aesthetic that adapts to all screen sizes
 
 ## Configuration Options
 
 Py Home Gallery supports the following command-line arguments:
+
+### Basic Options
 
 ```
 --media-dir PATH       Root directory containing media files
@@ -130,6 +142,48 @@ Py Home Gallery supports the following command-line arguments:
                        ENV: PY_HOME_GALLERY_PLACEHOLDER
 
 --skip-ffmpeg-check    Skip the check for FFmpeg installation (use at your own risk)
+```
+
+### Performance Options
+
+```
+--cache-ttl SECONDS    Cache TTL in seconds
+                       (default: 300)
+                       ENV: PY_HOME_GALLERY_CACHE_TTL
+
+--worker-threads NUM   Number of background worker threads
+                       (default: 2)
+                       ENV: PY_HOME_GALLERY_WORKER_THREADS
+
+--no-cache             Disable caching
+
+--no-worker            Disable background thumbnail generation
+```
+
+### Production Options
+
+```
+--production           Run in production mode using Waitress WSGI server
+                       (cross-platform, requires: pip install waitress)
+                       ENV: PY_HOME_GALLERY_PRODUCTION
+
+--no-serve-media       Disable Flask media file serving
+                       (for use with external server like Nginx)
+                       ENV: PY_HOME_GALLERY_SERVE_MEDIA
+```
+
+### Logging Options
+
+```
+--log-level LEVEL      Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+                       (default: INFO)
+                       ENV: PY_HOME_GALLERY_LOG_LEVEL
+
+--log-dir PATH         Directory for log files
+                       (default: ./logs)
+                       ENV: PY_HOME_GALLERY_LOG_DIR
+
+--no-log-file          Disable logging to file (log to console only)
 ```
 
 The environment variables can be set differently depending on your shell:
@@ -437,14 +491,15 @@ python run.py --worker-threads 4
 
 1. **Use SSD storage** for media and thumbnails when possible
 2. **Disable antivirus scanning** for the media and thumbnail directories (if safe to do so)
-3. **For production**, use a proper WSGI server:
+3. **For production**, use the production mode flag:
    ```bash
-   # Install waitress (works on Windows)
+   # Install waitress (cross-platform WSGI server)
    pip install waitress
 
-   # Run with waitress
-   waitress-serve --host=0.0.0.0 --port=8000 --call py_home_gallery:create_app
+   # Run in production mode
+   python run.py --media-dir "/path/to/media" --production
    ```
+   This uses Waitress instead of Flask's development server for better performance and concurrency.
 
 ## License
 
