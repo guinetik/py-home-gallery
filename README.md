@@ -6,8 +6,6 @@ A lightweight, Flask-based media gallery server designed for browsing and viewin
 ![Flask](https://img.shields.io/badge/flask-2.0+-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
 
-> **🎉 New in November 2025**: Major security, logging, and error handling improvements! See [docs/IMPROVEMENTS_SUMMARY.md](docs/IMPROVEMENTS_SUMMARY.md) for details.
-
 ## Features
 
 ### Core Features

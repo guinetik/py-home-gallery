@@ -168,7 +168,7 @@ nav button, nav select {
   font-weight: 500;
   font-family: inherit;
   line-height: 1.5;
-  border-radius: 20px;
+  border-radius: 0;
   border: 1px solid var(--glass-border);
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
@@ -300,7 +300,7 @@ header .logo {
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   box-shadow: 0 4px 16px var(--glass-shadow);
   transition: all var(--transition);
   cursor: pointer;
@@ -369,7 +369,7 @@ header .logo {
   display: block;
   position: relative;
   overflow: hidden;
-  border-radius: var(--radius-md);
+  border-radius: 0;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   transition: all var(--transition);
@@ -404,7 +404,7 @@ header .logo {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: var(--radius-md);
+  border-radius: 0;
   transition: transform var(--transition-slow);
 }
 

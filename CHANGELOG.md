@@ -1,5 +1,46 @@
 # CHANGELOG
 
+## 0.2.0 - 2025-11-23
+
+### 🏭 Added
+
+- **Browse page with 3D Cover Flow carousel** - iPod-inspired interface for folder navigation
+- `/api/browse` endpoint - returns all folders with random vertical thumbnail previews
+- **Multiple navigation methods:**
+  - Keyboard (arrow keys, Enter)
+  - Mouse wheel with throttling
+  - Touch swipe gestures
+  - Mouse drag
+  - Click on any card to center it
+- **Parallax mouse movement effect** - carousel tilts subtly based on cursor position (max 5° on X/Y axes)
+- **Intro animations** - staggered card entrance with fade-in and scale-up effect
+- **Responsive scaling** - optimized layouts for mobile (260px cards), desktop (350px), Full HD (450px), and 4K (550px)
+
+### ⚡ Performance
+
+- GPU-optimized rendering without heavy reflection effects
+- Animation locking prevents navigation during transitions (eliminates visible card jumping)
+- Mouse wheel throttling (400ms cooldown) for smooth scrolling
+- Smooth wrap-around with opacity fade - cards invisible during position changes
+- Cross-browser compatible flexbox layout (Firefox, Chrome, Safari)
+
+### 🎨 Design
+
+- Classic Cover Flow aesthetic with 3D card rotation (40°-60° angles)
+- Up to 7 visible cards (center + 3 on each side) with depth positioning
+- Vertical thumbnail prioritization for folder covers (portrait images preferred)
+- Glassmorphism cards with folder name and item count
+- Hover effects - active card scales to 1.05x with blue border accent
+- Text positioned above image (cleaner look, no text in reflection area)
+- Cards scale proportionally across screen sizes with proper 3D perspective depth
+
+### 💡 Fixed
+
+- Image alignment with card rounded corners (14px bottom radius)
+- Cross-browser image sizing consistency using flexbox
+- Text selection disabled during swipe gestures
+- Gap between card and image eliminated with flex layout
+
 ## 0.1.0 - 2025-11-23
 
 ### 🏭 Added

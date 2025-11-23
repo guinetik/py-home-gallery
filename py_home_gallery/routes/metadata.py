@@ -4,13 +4,16 @@ Metadata API routes for Py Home Gallery.
 This module provides API endpoints for retrieving media metadata.
 """
 
-from flask import Blueprint, jsonify, current_app, make_response
+from flask import Blueprint, jsonify, current_app, make_response, request
 from py_home_gallery.utils.metadata import get_media_metadata, format_metadata_for_display
 from py_home_gallery.utils.security import get_safe_path
+from py_home_gallery.utils.logger import get_logger
 import os
 import json
+import random
 
 bp = Blueprint('metadata', __name__)
+logger = get_logger(__name__)
 
 
 @bp.route('/api/metadata/<path:media_path>')
@@ -90,6 +93,67 @@ def get_metadata(media_path):
         error_trace = traceback.format_exc()
         print(f"Metadata error for {media_path}:")
         print(error_trace)
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@bp.route('/api/mosaic')
+def mosaic():
+    """
+    Get random thumbnails for mosaic display.
+
+    Query Parameters:
+        count (int): Number of thumbnails to return (default: 100, max: 500)
+
+    Returns:
+        JSON response with list of thumbnail paths
+
+    Example:
+        /api/mosaic?count=50
+        /api/mosaic?count=200
+    """
+    thumbnail_dir = current_app.config['THUMBNAIL_DIR']
+
+    # Get count from query parameter (default 100, max 500)
+    try:
+        requested_count = int(request.args.get('count', 100))
+        requested_count = max(1, min(requested_count, 500))  # Clamp between 1 and 500
+    except ValueError:
+        requested_count = 100
+
+    try:
+        # Get all thumbnail files
+        thumbnails = []
+        for root, dirs, files in os.walk(thumbnail_dir):
+            for file in files:
+                # Only include image files
+                if file.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
+                    # Get relative path from thumbnail dir
+                    full_path = os.path.join(root, file)
+                    rel_path = os.path.relpath(full_path, thumbnail_dir)
+                    # Convert to URL-safe path (forward slashes, not backslashes)
+                    url_path = rel_path.replace('\\', '/')
+                    # Return as mosaic thumbnail URL (direct serving, no generation)
+                    thumbnails.append(f'/mosaic-thumb/{url_path}')
+
+        logger.info(f"Found {len(thumbnails)} total thumbnails, requested {requested_count}")
+
+        # Pick random thumbnails (requested count or all if less available)
+        count = min(requested_count, len(thumbnails))
+        random_thumbnails = random.sample(thumbnails, count) if thumbnails else []
+
+        return jsonify({
+            'success': True,
+            'thumbnails': random_thumbnails,
+            'count': count,
+            'requested': requested_count,
+            'total': len(thumbnails)
+        })
+
+    except Exception as e:
+        logger.error(f"Error generating mosaic: {e}", exc_info=True)
         return jsonify({
             'success': False,
             'error': str(e)

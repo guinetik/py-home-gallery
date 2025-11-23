@@ -15,10 +15,64 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: var(--bg-page);
+            background: #000;
             min-height: 100vh;
             padding: 0;
-            transition: background-color 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        /* Mosaic Background Grid */
+        .mosaic-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            display: grid;
+            gap: 0;
+            background: #000;
+        }
+
+        .mosaic-cell {
+            background: #000;
+            border: 1px solid #1a1a1a;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mosaic-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .mosaic-cell img.loaded {
+            opacity: 1;
+        }
+
+        /* Content Overlay */
+        .content-overlay {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            /* Ensure content aligns with grid cells */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Darken background slightly for content readability */
+        .mosaic-background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            pointer-events: none;
         }
 
         /* Sleek gradient overlay - blue accent for dark, subtle for light */
@@ -46,14 +100,16 @@
             background: var(--glass-bg);
             backdrop-filter: saturate(180%) blur(20px);
             -webkit-backdrop-filter: saturate(180%) blur(20px);
-            padding: 1rem 2rem;
+            padding: 0;
             box-shadow: 0 4px 16px var(--glass-shadow);
             border-bottom: 1px solid var(--glass-border);
-            border-radius: 0 0 12px 12px;
+            border-radius: 0;
             display: flex;
             align-items: center;
             gap: 1rem;
-            min-height: 72px;
+            height: 150px; /* Exactly 1 grid cell */
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
 
         .nav-bar img {
@@ -78,13 +134,19 @@
             background: var(--glass-bg);
             backdrop-filter: saturate(180%) blur(20px);
             -webkit-backdrop-filter: saturate(180%) blur(20px);
-            margin: 2rem auto;
-            max-width: 1200px;
-            padding: 3rem 2rem;
-            border-radius: 20px;
+            margin: 150px auto 0 auto; /* 1 row spacing from nav (150px) */
+            /* Span 8 columns (8 * 150px = 1200px) - centered */
+            width: 1200px;
+            /* Height spans 3 rows (3 * 150px = 450px) */
+            height: 450px;
+            padding: 2rem;
+            border-radius: 0;
             box-shadow: 0 8px 32px var(--glass-shadow);
             border: 1px solid var(--glass-border);
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .stats-hero h2 {
@@ -131,30 +193,41 @@
 
         .container {
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem 4rem 2rem;
+            margin: 150px auto 0 auto; /* 1 row spacing (150px) */
+            padding: 0;
+            /* Align to grid - start at grid position */
+            width: 1200px; /* 8 columns * 150px */
         }
 
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-            margin-bottom: 2rem;
+            gap: 0;
+            margin-bottom: 0;
+            /* Each card is 2x2 grid cells (300px x 300px) */
+            width: 100%;
         }
 
         .gallery-card {
             background: var(--glass-bg);
             backdrop-filter: saturate(180%) blur(20px);
             -webkit-backdrop-filter: saturate(180%) blur(20px);
-            border-radius: 16px;
-            padding: 2.5rem 2rem;
+            border-radius: 0;
+            /* Each card spans 2x2 grid cells (300px x 300px) */
+            width: 300px;
+            height: 300px;
+            padding: 1.5rem;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
-            border: 2px solid var(--glass-border);
+            border: 1px solid var(--glass-border);
             box-shadow: 0 4px 20px var(--glass-shadow);
             text-decoration: none;
-            display: block;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
         }
 
         .gallery-card:hover {
@@ -184,9 +257,12 @@
 
         .full-width-card {
             grid-column: 1 / -1;
+            /* Full width card spans 8 columns (1200px) and 2 rows (300px) */
+            width: 1200px;
+            height: 300px;
             background: linear-gradient(135deg, var(--primary), rgba(10, 132, 255, 0.6));
             color: white;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .full-width-card:hover {
@@ -203,25 +279,62 @@
         }
 
         @media (max-width: 768px) {
-            .gallery-grid {
-                grid-template-columns: 1fr;
+            .stats-hero h2 {
+                font-size: 1.75rem;
             }
 
-            .stats-hero h2 {
-                font-size: 2rem;
+            .stats-hero p {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
             }
 
             .stat-number {
                 font-size: 2rem;
             }
 
+            .stat-label {
+                font-size: 0.85rem;
+            }
+
+            .gallery-card-icon {
+                font-size: 3rem;
+            }
+
+            .gallery-card-title {
+                font-size: 1.25rem;
+            }
+
+            .gallery-card-desc {
+                font-size: 0.9rem;
+            }
+
             .nav-bar {
+                height: auto;
+                min-height: 72px;
                 padding: 1rem;
+            }
+
+            .nav-bar h1 {
+                font-size: 1rem;
+            }
+
+            .nav-bar img {
+                height: 32px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Mosaic Background -->
+    <div class="mosaic-background" id="mosaicBackground"></div>
+
+    <!-- Content Overlay -->
+    <div class="content-overlay">
     <nav class="nav-bar">
         <a href="/">
             <div class="logo">
@@ -292,8 +405,319 @@
             </a>
         </div>
     </div>
+    </div><!-- End content-overlay -->
 
     <script>
+        // Mosaic Background Manager
+        const CELL_SIZE = 150; // Fixed square size in pixels
+        let shuffleTimeout;
+
+        function createMosaic() {
+            const container = document.getElementById('mosaicBackground');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            // Calculate grid dimensions
+            const cols = Math.ceil(width / CELL_SIZE);
+            const rows = Math.ceil(height / CELL_SIZE);
+            const totalCells = cols * rows;
+
+            console.log(`Creating ${cols}x${rows} grid (${totalCells} cells)`);
+
+            // Set grid template
+            container.style.gridTemplateColumns = `repeat(${cols}, ${CELL_SIZE}px)`;
+            container.style.gridTemplateRows = `repeat(${rows}, ${CELL_SIZE}px)`;
+
+            // Fetch images
+            fetch(`/api/mosaic?count=${totalCells}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        populateMosaic(container, data.thumbnails, totalCells);
+                    }
+                })
+                .catch(err => console.error('Error loading mosaic:', err));
+        }
+
+        function populateMosaic(container, images, totalCells) {
+            // Clear existing cells
+            container.innerHTML = '';
+
+            // If we don't have enough images, repeat them to fill the grid
+            if (images.length === 0) {
+                console.warn('No images available for mosaic');
+                return;
+            }
+
+            console.log(`Populating ${totalCells} cells with ${images.length} images (repeating: ${totalCells > images.length})`);
+
+            // Create cells
+            const cells = [];
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'mosaic-cell';
+
+                const img = document.createElement('img');
+                // Use modulo to repeat images if we don't have enough
+                const imageUrl = images[i % images.length];
+
+                if (imageUrl) {
+                    // Random delay for staggered effect
+                    const delay = Math.random() * 2000;
+
+                    // Handle both onload and already-loaded images
+                    const showImage = () => {
+                        setTimeout(() => {
+                            img.classList.add('loaded');
+                            console.log('Image loaded:', imageUrl);
+                        }, delay);
+                    };
+
+                    img.onerror = (e) => {
+                        console.error('Failed to load image:', imageUrl, e);
+                    };
+
+                    // Set src first
+                    img.src = imageUrl;
+
+                    // Check if image is already cached/loaded
+                    if (img.complete && img.naturalHeight !== 0) {
+                        console.log('Image already cached:', imageUrl);
+                        showImage();
+                    } else {
+                        img.onload = showImage;
+                    }
+                }
+
+                cell.appendChild(img);
+                container.appendChild(cell);
+                cells.push(cell);
+            }
+
+            // Debug: Force all images to show after 3 seconds as fallback
+            setTimeout(() => {
+                const notLoaded = container.querySelectorAll('.mosaic-cell img:not(.loaded)');
+                if (notLoaded.length > 0) {
+                    console.warn(`Forcing ${notLoaded.length} images to show (didn't load naturally)`);
+                    notLoaded.forEach(img => img.classList.add('loaded'));
+                }
+            }, 3000);
+        }
+
+        function shuffleRandomCells() {
+            const now = new Date().toLocaleTimeString();
+
+            // Get all cells
+            const cells = Array.from(document.querySelectorAll('.mosaic-cell'));
+            if (cells.length === 0) {
+                console.warn(`[${now}] No cells found, skipping shuffle`);
+                shuffleTimeout = setTimeout(shuffleRandomCells, 10000);
+                return;
+            }
+
+            // Pick 1-5 random cells
+            const numCells = Math.floor(Math.random() * 5) + 1; // Random between 1 and 5
+            const cellsToShuffle = [];
+            const usedIndices = new Set();
+
+            // Select random unique cells
+            for (let i = 0; i < numCells && i < cells.length; i++) {
+                let randomIndex;
+                do {
+                    randomIndex = Math.floor(Math.random() * cells.length);
+                } while (usedIndices.has(randomIndex));
+
+                usedIndices.add(randomIndex);
+                cellsToShuffle.push({ cell: cells[randomIndex], index: randomIndex });
+            }
+
+            console.log(`[${now}] 🔄 Shuffling ${numCells} cells:`, Array.from(usedIndices).map(i => i + 1).join(', '));
+
+            // Fade out all selected cells
+            cellsToShuffle.forEach(({ cell, index }) => {
+                const img = cell.querySelector('img');
+                if (img) {
+                    img.classList.remove('loaded');
+                }
+            });
+
+            // Wait for fade out, then fetch new images
+            setTimeout(() => {
+                // Fetch new random thumbnails
+                fetch(`/api/mosaic?count=${numCells}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.thumbnails.length > 0) {
+                            // Replace each cell with a new image
+                            cellsToShuffle.forEach(({ cell, index }, i) => {
+                                if (data.thumbnails[i]) {
+                                    const newImageUrl = data.thumbnails[i];
+                                    const oldImg = cell.querySelector('img');
+
+                                    // Create new image element
+                                    const newImg = document.createElement('img');
+
+                                    const showImage = () => {
+                                        // Small delay before fading in
+                                        setTimeout(() => {
+                                            newImg.classList.add('loaded');
+                                        }, 100);
+                                    };
+
+                                    newImg.onerror = (e) => {
+                                        console.error(`[${now}] Failed to load:`, newImageUrl, e);
+                                    };
+
+                                    newImg.src = newImageUrl;
+
+                                    // Check if already cached
+                                    if (newImg.complete && newImg.naturalHeight !== 0) {
+                                        showImage();
+                                    } else {
+                                        newImg.onload = showImage;
+                                    }
+
+                                    // Replace old image with new one
+                                    if (oldImg) {
+                                        cell.removeChild(oldImg);
+                                    }
+                                    cell.appendChild(newImg);
+                                }
+                            });
+                        }
+                    })
+                    .catch(err => console.error(`[${now}] Error fetching images:`, err));
+            }, 800);
+
+            // Schedule next shuffle in 10 seconds
+            shuffleTimeout = setTimeout(shuffleRandomCells, 10000);
+        }
+
+        // Initialize mosaic on load
+        window.addEventListener('load', () => {
+            console.log('🎬 Page loaded - initializing mosaic');
+            createMosaic();
+
+            // Start shuffle cycle (first shuffle in 10 seconds)
+            const initialDelay = 10000;
+            console.log(`⏰ First shuffle in ${Math.round(initialDelay / 1000)}s`);
+            shuffleTimeout = setTimeout(shuffleRandomCells, initialDelay);
+        });
+
+        // Recreate on window resize (debounced) - DON'T break shuffle cycle
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                console.log('📐 Window resized - recreating grid without affecting shuffle cycle');
+                createMosaic();
+                // Note: We don't reschedule shuffle here - let existing cycle continue
+            }, 500);
+        });
+    </script>
+
+    <script>
+        // Align foreground elements to grid - responsive
+        function alignToGrid() {
+            const CELL_SIZE = 150;
+            const viewportWidth = window.innerWidth;
+            const isMobile = viewportWidth <= 768;
+
+            // Calculate grid columns that fit on screen
+            const totalCols = Math.floor(viewportWidth / CELL_SIZE);
+
+            // Determine content width based on viewport
+            let contentCols;
+            if (isMobile) {
+                // Mobile: use most of the screen (leave 1 cell padding on each side if possible)
+                contentCols = Math.max(2, totalCols - 1);
+            } else {
+                // Desktop: use 8 columns max, or fit to screen
+                contentCols = Math.min(8, totalCols - 1);
+            }
+
+            const contentWidth = contentCols * CELL_SIZE;
+
+            // Calculate centered position and snap to grid
+            const centeredLeft = (viewportWidth - contentWidth) / 2;
+            const snappedLeft = Math.round(centeredLeft / CELL_SIZE) * CELL_SIZE;
+
+            // Apply to stats-hero
+            const statsHero = document.querySelector('.stats-hero');
+            if (statsHero) {
+                statsHero.style.width = contentWidth + 'px';
+                statsHero.style.marginLeft = snappedLeft + 'px';
+                statsHero.style.marginRight = 'auto';
+
+                // Height: 3 rows on desktop, 2 rows on mobile
+                const heightRows = isMobile ? 2 : 3;
+                statsHero.style.height = (heightRows * CELL_SIZE) + 'px';
+
+                // Top margin: 1 row spacing
+                statsHero.style.marginTop = CELL_SIZE + 'px';
+            }
+
+            // Apply to container
+            const container = document.querySelector('.container');
+            if (container) {
+                container.style.width = contentWidth + 'px';
+                container.style.marginLeft = snappedLeft + 'px';
+                container.style.marginRight = 'auto';
+                container.style.marginTop = CELL_SIZE + 'px';
+                container.style.padding = '0';
+            }
+
+            // Apply to gallery grid and cards
+            const galleryGrid = document.querySelector('.gallery-grid');
+            const galleryCards = document.querySelectorAll('.gallery-card:not(.full-width-card)');
+
+            let cardCols;
+            if (galleryGrid) {
+                if (isMobile) {
+                    // Mobile: 1 or 2 column layout based on width
+                    cardCols = contentCols >= 4 ? 2 : 1;
+                    galleryGrid.style.gridTemplateColumns = `repeat(${cardCols}, 1fr)`;
+                } else {
+                    // Desktop: 4 columns (each card is 2x2 cells = 300px)
+                    cardCols = 4;
+                    galleryGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                }
+            }
+
+            // Set card dimensions based on available width
+            const cardWidth = contentWidth / cardCols;
+            const cardHeight = isMobile ? 'auto' : (CELL_SIZE * 2) + 'px';
+            const cardMinHeight = isMobile ? (CELL_SIZE * 1.5) + 'px' : (CELL_SIZE * 2) + 'px';
+
+            galleryCards.forEach(card => {
+                card.style.width = cardWidth + 'px';
+                card.style.height = cardHeight;
+                if (isMobile) {
+                    card.style.minHeight = cardMinHeight;
+                }
+            });
+
+            // Full width card
+            const fullWidthCard = document.querySelector('.full-width-card');
+            if (fullWidthCard) {
+                fullWidthCard.style.width = contentWidth + 'px';
+                fullWidthCard.style.height = isMobile ? 'auto' : (CELL_SIZE * 2) + 'px';
+                if (isMobile) {
+                    fullWidthCard.style.minHeight = (CELL_SIZE * 1.5) + 'px';
+                }
+            }
+
+            console.log(`📐 Grid aligned: ${contentCols} cols (${contentWidth}px) centered at ${snappedLeft}px`);
+        }
+
+        // Run alignment on load and resize
+        window.addEventListener('load', () => {
+            setTimeout(alignToGrid, 50);
+        });
+        window.addEventListener('resize', () => {
+            setTimeout(alignToGrid, 100);
+        });
+
         // Fetch stats from API
         fetch('/api/stats')
             .then(response => response.json())

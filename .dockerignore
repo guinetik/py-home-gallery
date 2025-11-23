@@ -40,7 +40,6 @@ logs/
 .env.example
 
 # Local development
-run.ps1
 samplegallery/
 media/
 thumbnails/

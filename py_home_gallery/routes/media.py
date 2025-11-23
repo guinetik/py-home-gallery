@@ -91,6 +91,37 @@ def serve_thumbnail(filename):
         return placeholder_url or abort(500, description="Internal server error")
 
 
+@bp.route('/mosaic-thumb/<path:filename>')
+def serve_mosaic_thumbnail(filename):
+    """
+    Directly serve thumbnail files for mosaic display.
+
+    This route serves pre-existing thumbnails directly from the thumbnail directory
+    without any generation logic - used by the mosaic background feature.
+    """
+    thumbnail_dir = current_app.config['THUMBNAIL_DIR']
+
+    try:
+        # Validate path traversal protection
+        thumbnail_path = get_safe_path(thumbnail_dir, filename)
+
+        if not thumbnail_path:
+            logger.warning(f"Path traversal attempt in mosaic thumbnail request: {filename}")
+            abort(403, description="Access denied")
+
+        # Check if the file exists
+        if not os.path.exists(thumbnail_path):
+            logger.warning(f"Thumbnail not found: {thumbnail_path}")
+            abort(404, description="Thumbnail not found")
+
+        # Serve the thumbnail directly
+        return send_file(thumbnail_path)
+
+    except Exception as e:
+        logger.error(f"Error serving mosaic thumbnail {filename}: {e}")
+        abort(500, description="Internal server error")
+
+
 @bp.route('/media/<path:filename>')
 def serve_media(filename):
     """
