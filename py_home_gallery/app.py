@@ -75,14 +75,23 @@ def create_app(config):
 
     # Preload cache if enabled (independent of workers)
     if config.cache_enabled:
-        from py_home_gallery.media.scanner import scan_directory
+        from py_home_gallery.media.scanner import scan_directory, list_subfolders
         from py_home_gallery.utils.logger import get_logger
         logger = get_logger(__name__)
         logger.info("Warming up directory cache...")
         try:
-            # Scan without dimensions for faster startup, dimensions added per-page later
+            # Scan root without dimensions for faster startup
             files = scan_directory(config.media_dir, use_cache=True, include_dimensions=False)
-            logger.info(f"✓ Cache warmed: {len(files)} files indexed")
+            logger.info(f"✓ Root cache warmed: {len(files)} files indexed")
+
+            # Also warm up per-folder caches WITH dimensions for browse page
+            logger.info("Warming up browse page cache (with dimensions)...")
+            subfolders = list_subfolders(config.media_dir)
+            for folder_name in subfolders:
+                folder_path = os.path.join(config.media_dir, folder_name)
+                # This will cache each folder with dimensions
+                scan_directory(folder_path, use_cache=True, include_dimensions=True)
+            logger.info(f"✓ Browse cache warmed: {len(subfolders)} folders indexed with dimensions")
         except Exception as e:
             logger.error(f"Error warming cache: {e}")
 
