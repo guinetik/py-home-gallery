@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Py Home Gallery</title>
+    <title>{{ content.site.title }}</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/theme.js"></script>
     <style>
@@ -338,8 +338,8 @@
     <nav class="nav-bar">
         <a href="/">
             <div class="logo">
-                <img src="/static/logo.svg" alt="Logo" onerror="this.src='https://via.placeholder.com/50'; this.onerror='';">
-                <span>Py Home Gallery</span>
+                <img src="/static/logo.svg" alt="{{ content.navigation.logo_alt }}" onerror="this.src='https://via.placeholder.com/50'; this.onerror='';">
+                <span>{{ content.navigation.site_name }}</span>
             </div>
         </a>
         <div class="filter-buttons">
@@ -348,24 +348,24 @@
     </nav>
 
     <div class="stats-hero">
-        <h2>Your Media Collection</h2>
-        <p>Browse, discover, and enjoy your photos and videos</p>
+        <h2>{{ content.home.hero_title }}</h2>
+        <p>{{ content.home.hero_subtitle }}</p>
         <div class="stats-grid">
             <div class="stat-item">
                 <span class="stat-number" id="totalFiles">-</span>
-                <span class="stat-label">Total Files</span>
+                <span class="stat-label">{{ content.home.stats.total_files }}</span>
             </div>
             <div class="stat-item">
                 <span class="stat-number" id="imageCount">-</span>
-                <span class="stat-label">Images</span>
+                <span class="stat-label">{{ content.home.stats.images }}</span>
             </div>
             <div class="stat-item">
                 <span class="stat-number" id="videoCount">-</span>
-                <span class="stat-label">Videos</span>
+                <span class="stat-label">{{ content.home.stats.videos }}</span>
             </div>
             <div class="stat-item">
                 <span class="stat-number" id="folderCount">-</span>
-                <span class="stat-label">Folders</span>
+                <span class="stat-label">{{ content.home.stats.folders }}</span>
             </div>
         </div>
     </div>
@@ -374,34 +374,34 @@
         <div class="gallery-grid">
             <!-- Row 1: Four cards -->
             <a href="/browse" class="gallery-card">
-                <span class="gallery-card-icon">📂</span>
-                <div class="gallery-card-title">Browse</div>
-                <div class="gallery-card-desc">Navigate through your media folders</div>
+                <span class="gallery-card-icon">{{ content.views.browse.icon }}</span>
+                <div class="gallery-card-title">{{ content.views.browse.title }}</div>
+                <div class="gallery-card-desc">{{ content.views.browse.description }}</div>
             </a>
 
             <a href="/gallery" class="gallery-card">
-                <span class="gallery-card-icon">🖼️</span>
-                <div class="gallery-card-title">Gallery</div>
-                <div class="gallery-card-desc">Explore your entire collection with classic pagination</div>
+                <span class="gallery-card-icon">{{ content.views.gallery.icon }}</span>
+                <div class="gallery-card-title">{{ content.views.gallery.title }}</div>
+                <div class="gallery-card-desc">{{ content.views.gallery.description }}</div>
             </a>
 
             <a href="/random" class="gallery-card">
-                <span class="gallery-card-icon">🎲</span>
-                <div class="gallery-card-title">Shuffle</div>
-                <div class="gallery-card-desc">Discover random media from your library</div>
+                <span class="gallery-card-icon">{{ content.views.shuffle.icon }}</span>
+                <div class="gallery-card-title">{{ content.views.shuffle.title }}</div>
+                <div class="gallery-card-desc">{{ content.views.shuffle.description }}</div>
             </a>
 
             <a href="/new" class="gallery-card">
-                <span class="gallery-card-icon">⭐</span>
-                <div class="gallery-card-title">Newest</div>
-                <div class="gallery-card-desc">See your most recently added media first</div>
+                <span class="gallery-card-icon">{{ content.views.newest.icon }}</span>
+                <div class="gallery-card-title">{{ content.views.newest.title }}</div>
+                <div class="gallery-card-desc">{{ content.views.newest.description }}</div>
             </a>
 
             <!-- Row 2: Full width card -->
             <a href="/infinite" class="gallery-card full-width-card">
-                <span class="gallery-card-icon">∞</span>
-                <div class="gallery-card-title">Infinite Scroll</div>
-                <div class="gallery-card-desc">Endless browsing experience - new content loads as you scroll</div>
+                <span class="gallery-card-icon">{{ content.views.infinite.icon }}</span>
+                <div class="gallery-card-title">{{ content.views.infinite.title }}</div>
+                <div class="gallery-card-desc">{{ content.views.infinite.description }}</div>
             </a>
         </div>
     </div>

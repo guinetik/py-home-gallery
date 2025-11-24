@@ -59,6 +59,9 @@ class Config:
         self.log_level = os.environ.get('PY_HOME_GALLERY_LOG_LEVEL', 'INFO').upper()
         self.log_to_file = os.environ.get('PY_HOME_GALLERY_LOG_TO_FILE', 'true').lower() == 'true'
         self.log_dir = os.environ.get('PY_HOME_GALLERY_LOG_DIR', DEFAULT_LOG_DIR)
+
+        # Content settings
+        self.content_path = os.environ.get('PY_HOME_GALLERY_CONTENT_PATH', None)
         
     def load_from_args(self, args=None):
         """Load configuration from command-line arguments."""
@@ -93,7 +96,11 @@ class Config:
         self.log_level = parsed_args.log_level
         self.log_to_file = not parsed_args.no_log_file
         self.log_dir = parsed_args.log_dir
-        
+
+        # Content settings
+        if parsed_args.content_path:
+            self.content_path = parsed_args.content_path
+
         return self
     
     def _create_arg_parser(self):
@@ -219,7 +226,16 @@ class Config:
             help='Directory for log files (default: ./logs). '
                  'ENV: PY_HOME_GALLERY_LOG_DIR'
         )
-        
+
+        parser.add_argument(
+            '--content-path',
+            type=str,
+            default=self.content_path,
+            help='Path to custom content.json file for UI customization. '
+                 'If not specified, looks for content.json in current directory. '
+                 'ENV: PY_HOME_GALLERY_CONTENT_PATH'
+        )
+
         return parser
         
     def validate(self):
@@ -258,6 +274,17 @@ class Config:
         print(f"Background Workers: {self.worker_threads if self.worker_enabled else 'Disabled'}")
         print(f"Log Level: {self.log_level}")
         print(f"Log to File: {self.log_to_file}{f' (Dir: {self.log_dir})' if self.log_to_file else ''}")
+
+        # Content customization info
+        content_source = "Default"
+        if os.environ.get('PY_HOME_GALLERY_CONTENT_JSON'):
+            content_source = "Environment Variable (PY_HOME_GALLERY_CONTENT_JSON)"
+        elif self.content_path:
+            content_source = f"Custom Path: {self.content_path}"
+        elif os.path.exists('content.json'):
+            content_source = "content.json (current directory)"
+
+        print(f"Content Source: {content_source}")
 
 
 def load_config():

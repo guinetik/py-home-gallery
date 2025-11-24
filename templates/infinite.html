@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Gallery (Infinite Scroll)</title>
+    <title>{{ content.views.infinite.title }} - {{ content.site.title }}</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/theme.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet">
@@ -17,8 +17,8 @@
     <nav>
         <a href="/">
             <div class="logo">
-                <img src="/static/logo.svg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'; this.onerror='';">
-                <span>Media Gallery (Infinite Scroll)</span>
+                <img src="/static/logo.svg" alt="{{ content.navigation.logo_alt }}" onerror="this.src='https://via.placeholder.com/40'; this.onerror='';">
+                <span>{{ content.navigation.site_name }} - {{ content.views.infinite.title }}</span>
             </div>
         </a>
         <div class="filter-buttons">

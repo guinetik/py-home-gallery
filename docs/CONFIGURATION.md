@@ -449,14 +449,70 @@ netstat -ano | findstr :8000
 python run.py --port 8080
 ```
 
+## Application Constants
+
+Py Home Gallery centralizes all magic numbers and default values in `py_home_gallery/constants.py`. These constants define application-wide defaults and are used throughout the codebase.
+
+### Key Constants
+
+**Pagination & Display**:
+- `DEFAULT_ITEMS_PER_PAGE = 50` - Default items per page in gallery views
+- `RANDOM_GALLERY_MAX_ITEMS = 100` - Maximum items in random gallery
+- `MOSAIC_DEFAULT_COUNT = 100` - Default mosaic thumbnail count
+- `MOSAIC_MAX_COUNT = 500` - Maximum mosaic thumbnail count
+
+**Thumbnails**:
+- `THUMBNAIL_WIDTH = 300` - Default thumbnail width
+- `THUMBNAIL_HEIGHT = 200` - Default thumbnail height
+- `THUMBNAIL_169_WIDTH = 300` - 16:9 aspect ratio width
+- `THUMBNAIL_169_HEIGHT = 169` - 16:9 aspect ratio height
+
+**Caching**:
+- `DEFAULT_CACHE_TTL = 300` - Default cache TTL (5 minutes)
+- `METADATA_CACHE_MULTIPLIER = 2` - Metadata cache lives 2x longer
+- `CACHE_PREFIX_DIRECTORY = "dir:"` - Directory cache key prefix
+- `CACHE_PREFIX_FILE = "file:"` - File cache key prefix
+
+**Workers**:
+- `DEFAULT_WORKER_THREADS = 2` - Default background worker threads
+- `WORKER_MAX_QUEUE_SIZE = 500` - Maximum worker job queue size
+- `PRELOAD_BATCH_SIZE = 500` - Thumbnail preload batch size
+
+**Server**:
+- `DEFAULT_HOST = "0.0.0.0"` - Default server host
+- `DEFAULT_PORT = 8000` - Default server port
+- `PRODUCTION_SERVER_THREADS = 4` - Production server thread count
+
+**File Types**:
+- `IMAGE_EXTENSIONS` - Supported image formats (`.png`, `.jpg`, `.jpeg`, `.gif`, `.bmp`, `.webp`)
+- `VIDEO_EXTENSIONS` - Supported video formats (`.mp4`, `.mov`, `.avi`, `.mkv`, `.webm`, `.flv`)
+
+### Customizing Constants
+
+To change application-wide defaults, modify `py_home_gallery/constants.py`:
+
+```python
+# Example: Change default items per page from 50 to 100
+DEFAULT_ITEMS_PER_PAGE = 100
+
+# Example: Increase cache TTL from 5 minutes to 10 minutes
+DEFAULT_CACHE_TTL = 600
+
+# Example: Increase worker threads from 2 to 4
+DEFAULT_WORKER_THREADS = 4
+```
+
+**Note**: Changes to constants require restarting the application.
+
 ## Related Documentation
 
 - [Deployment Guide](DEPLOYMENT.md) - Production deployment
 - [Cache and Workers Guide](CACHE_AND_WORKERS.md) - Performance configuration
 - [Logging Guide](LOGGING.md) - Logging configuration
+- [Architecture Guide](ARCHITECTURE.md) - Code structure and constants module
 
 ---
 
-**Last Updated**: December 2024  
+**Last Updated**: November 2025
 **Project Version**: 0.2.0
 

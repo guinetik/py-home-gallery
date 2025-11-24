@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse - Py Home Gallery</title>
+    <title>{{ content.browse_page.title }} - {{ content.site.title }}</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/theme.js"></script>
     <style>
@@ -478,8 +478,8 @@
     <nav>
         <a href="/">
             <div class="logo">
-                <img src="/static/logo.svg" alt="Logo" onerror="this.src='https://via.placeholder.com/40'; this.onerror='';">
-                <span>Browse Folders</span>
+                <img src="/static/logo.svg" alt="{{ content.navigation.logo_alt }}" onerror="this.src='https://via.placeholder.com/40'; this.onerror='';">
+                <span>{{ content.navigation.site_name }} - {{ content.browse_page.title }}</span>
             </div>
         </a>
         <div class="filter-buttons">
@@ -493,7 +493,7 @@
                 <!-- Folder cards will be injected here -->
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
-                    <div>Loading folders...</div>
+                    <div>{{ content.browse_page.loading }}</div>
                 </div>
             </div>
 
@@ -552,7 +552,7 @@
                 card.innerHTML = `
                     <div class="folder-info">
                         <div class="folder-name">${folder.folder}</div>
-                        <div class="folder-count">${folder.count} items</div>
+                        <div class="folder-count">${folder.count} ${folder.count === 1 ? '{{ content.browse_page.item_count.singular }}' : '{{ content.browse_page.item_count.plural }}'}</div>
                     </div>
                     <img src="${folder.thumbnail}" alt="${folder.folder}" loading="lazy">
                 `;

@@ -29,6 +29,10 @@ services:
       - PY_HOME_GALLERY_WORKER_ENABLED=${WORKER_ENABLED:-true}
       - PY_HOME_GALLERY_WORKER_THREADS=${WORKER_THREADS:-2}
       - PY_HOME_GALLERY_LOG_LEVEL=${LOG_LEVEL:-INFO}
+
+      # Content customization (optional)
+      - PY_HOME_GALLERY_CONTENT_JSON=${CONTENT_JSON:-}
+      - PY_HOME_GALLERY_CONTENT_PATH=${CONTENT_PATH:-}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000')"]

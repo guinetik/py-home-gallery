@@ -6,6 +6,7 @@ Welcome to the Py Home Gallery documentation. This documentation provides compre
 
 ### For Users
 - **[Features Guide](FEATURES.md)** - Learn about all available features and how to use them
+- **[Content Customization Guide](CONTENT_CUSTOMIZATION.md)** - Customize all UI text for themed galleries
 - **[Configuration Guide](CONFIGURATION.md)** - Configure the application to your needs
 
 ### For Developers
@@ -28,17 +29,18 @@ Welcome to the Py Home Gallery documentation. This documentation provides compre
 
 ```
 docs/
-├── README.md              # This file - documentation index
-├── ARCHITECTURE.md        # System architecture and design
-├── SECURITY.md            # Security features and best practices
-├── LOGGING.md             # Logging system guide
-├── ERROR_HANDLING.md      # Error handling strategies
-├── CACHE_AND_WORKERS.md   # Performance features (cache & workers)
-├── CONFIGURATION.md       # Configuration guide
-├── DEPLOYMENT.md          # Deployment guide
-├── DEVELOPMENT.md         # Development guide for contributors
-├── API.md                 # API endpoint reference
-└── FEATURES.md            # Features documentation
+├── README.md                   # This file - documentation index
+├── ARCHITECTURE.md             # System architecture and design
+├── SECURITY.md                 # Security features and best practices
+├── LOGGING.md                  # Logging system guide
+├── ERROR_HANDLING.md           # Error handling strategies
+├── CACHE_AND_WORKERS.md        # Performance features (cache & workers)
+├── CONFIGURATION.md            # Configuration guide
+├── CONTENT_CUSTOMIZATION.md    # Content customization guide
+├── DEPLOYMENT.md               # Deployment guide
+├── DEVELOPMENT.md              # Development guide for contributors
+├── API.md                      # API endpoint reference
+└── FEATURES.md                 # Features documentation
 ```
 
 ## Getting Started
@@ -65,6 +67,7 @@ docs/
 
 ### End Users
 - **[Features Guide](FEATURES.md)** - How to use the gallery
+- **[Content Customization Guide](CONTENT_CUSTOMIZATION.md)** - Customize UI text for your use case
 - **[Configuration Guide](CONFIGURATION.md)** - Basic configuration
 
 ### Developers

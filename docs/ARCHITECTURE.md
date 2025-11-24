@@ -38,6 +38,8 @@ py-home-gallery/
 │   │   ├── metadata.py          # Metadata extraction
 │   │   └── ffmpeg.py            # FFmpeg validation
 │   │
+│   ├── constants.py             # Application-wide constants
+│   │
 │   └── workers/                  # Background workers
 │       ├── __init__.py
 │       ├── thumbnail_worker.py  # Thumbnail generation worker
@@ -103,9 +105,9 @@ py-home-gallery/
 │  │   security   │  │   logger     │  │   cache  │   │
 │  │              │  │              │  │          │   │
 │  └──────────────┘  └──────────────┘  └──────────┘   │
-│  ┌──────────────┐  ┌──────────────┐                 │
-│  │  pagination  │  │   config     │                 │
-│  └──────────────┘  └──────────────┘                 │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────┐   │
+│  │  pagination  │  │   config     │  │constants │   │
+│  └──────────────┘  └──────────────┘  └──────────┘   │
 └─────────────────────────────────────────────────────┘
                         ▼
 ┌─────────────────────────────────────────────────────┐
@@ -230,6 +232,17 @@ py-home-gallery/
 
 **config.py** - Configuration management
 - `Config` class - Configuration from CLI args and environment variables
+
+**constants.py** - Application-wide constants
+- Centralized magic numbers and configuration values
+- Pagination defaults (items per page, limits)
+- Thumbnail dimensions and aspect ratios
+- Cache settings (TTL, prefixes, suffixes)
+- Worker settings (threads, queue sizes)
+- Server defaults (host, port)
+- File type extensions
+- Default dimensions for media types
+- Path configurations
 - `load_config()` - Load and validate configuration
 - Supports command-line arguments and environment variables
 

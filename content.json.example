@@ -1,0 +1,109 @@
+{
+  "_comment": "Py Home Gallery Content Customization - Copy this file to content.json and customize as needed",
+  "_usage": "All text strings in the UI can be customized here. Perfect for themed galleries (weddings, events, etc.)",
+
+  "site": {
+    "title": "Py Home Gallery",
+    "description": "A lightweight media gallery server for your home network"
+  },
+
+  "navigation": {
+    "logo_alt": "Logo",
+    "site_name": "Py Home Gallery"
+  },
+
+  "home": {
+    "hero_title": "Your Media Collection",
+    "hero_subtitle": "Browse, discover, and enjoy your photos and videos",
+    "stats": {
+      "total_files": "Total Files",
+      "images": "Images",
+      "videos": "Videos",
+      "folders": "Folders"
+    }
+  },
+
+  "views": {
+    "browse": {
+      "title": "Browse",
+      "description": "Navigate through your media folders",
+      "icon": "📂"
+    },
+    "gallery": {
+      "title": "Gallery",
+      "description": "Explore your entire collection with classic pagination",
+      "icon": "🖼️"
+    },
+    "shuffle": {
+      "title": "Shuffle",
+      "description": "Discover random media from your library",
+      "icon": "🎲"
+    },
+    "newest": {
+      "title": "Newest",
+      "description": "See your most recently added media first",
+      "icon": "⭐"
+    },
+    "infinite": {
+      "title": "Infinite Scroll",
+      "description": "Endless browsing experience - new content loads as you scroll",
+      "icon": "∞"
+    }
+  },
+
+  "gallery_page": {
+    "title": "Gallery",
+    "all_folders": "All Folders",
+    "all_media": "All Media",
+    "images_only": "Images Only",
+    "videos_only": "Videos Only"
+  },
+
+  "browse_page": {
+    "title": "Browse Folders",
+    "subtitle": "Navigate through your media collection",
+    "loading": "Loading folders...",
+    "no_folders": "No folders found",
+    "item_count": {
+      "singular": "item",
+      "plural": "items"
+    }
+  },
+
+  "_examples": {
+    "_comment": "Example customizations for different use cases",
+
+    "wedding_theme": {
+      "site": {
+        "title": "Sarah & John's Wedding",
+        "description": "Wedding Photos & Videos - June 2024"
+      },
+      "home": {
+        "hero_title": "Our Special Day",
+        "hero_subtitle": "Relive the magic of our wedding celebration"
+      }
+    },
+
+    "family_photos": {
+      "site": {
+        "title": "The Smith Family Photos",
+        "description": "Our family memories collection"
+      },
+      "home": {
+        "hero_title": "Family Memories",
+        "hero_subtitle": "A collection of our precious moments together"
+      }
+    },
+
+    "event_gallery": {
+      "site": {
+        "title": "Tech Conference 2024",
+        "description": "Conference photos and presentation videos"
+      },
+      "home": {
+        "hero_title": "Tech Conference 2024",
+        "hero_subtitle": "Browse presentations, photos, and recorded sessions"
+      }
+    }
+  }
+}

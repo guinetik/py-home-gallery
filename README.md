@@ -14,6 +14,7 @@ A lightweight, Flask-based media gallery server designed for browsing and viewin
 - **Living Mosaic Background**: Dynamic grid of photos that auto-shuffles for a screensaver effect
 - **Multiple Gallery Views**: Browse, Gallery, Random, Newest, and Infinite scroll options
 - **Dark/Light Theme Toggle**: Site-wide theme system with localStorage persistence
+- **Content Customization**: Customize all UI text via content.json - perfect for themed galleries (weddings, events, etc.)
 - **Automatic Video Thumbnails**: Generates thumbnails for videos using the middle frame
 - **Responsive Grid Layout**: Square-cornered design with grid-aligned elements across all resolutions
 - **Media Filtering**: Filter by media type (video/images) and folders
@@ -197,6 +198,14 @@ Py Home Gallery supports the following command-line arguments:
                        ENV: PY_HOME_GALLERY_LOG_DIR
 
 --no-log-file          Disable logging to file (log to console only)
+```
+
+### Content Customization Options
+
+```
+--content-path PATH    Path to custom content.json file for UI customization
+                       If not specified, looks for content.json in current directory
+                       ENV: PY_HOME_GALLERY_CONTENT_PATH
 ```
 
 The environment variables can be set differently depending on your shell:
@@ -453,6 +462,31 @@ When you request a thumbnail that doesn't exist yet:
 This provides the best of both worlds: fast serving + on-demand generation.
 
 ## Customization
+
+### Content Customization (No Code Required!)
+
+Customize all UI text, titles, descriptions, and labels via `content.json`:
+
+```bash
+# Copy the example file
+cp content.json.example content.json
+
+# Edit with your custom text
+nano content.json
+
+# Restart the application
+python run.py --media-dir /path/to/media
+```
+
+Perfect for themed galleries:
+- 💍 Wedding galleries ("Our Special Day", "Ceremony Photos", etc.)
+- 👨‍👩‍👧‍👦 Family collections ("The Smith Family Memories")
+- 🎤 Corporate events ("Tech Summit 2024")
+- ✈️ Travel galleries ("European Adventure 2024")
+
+**[→ Full Content Customization Guide](docs/CONTENT_CUSTOMIZATION.md)**
+
+### Advanced Customization
 
 - **Thumbnail Size**: Modify the thumbnail dimensions in the `serve_thumbnail` function
 - **Styling**: Customize the appearance by modifying the CSS in the HTML templates

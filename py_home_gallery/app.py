@@ -11,6 +11,7 @@ from py_home_gallery.workers.thumbnail_worker import shutdown_thumbnail_worker
 from py_home_gallery.workers.preload import preload_all
 from py_home_gallery.utils.cache import setup_caches
 from py_home_gallery.utils.logger import configure_logging
+from py_home_gallery.utils.content import get_content_manager
 from py_home_gallery.constants import METADATA_CACHE_MULTIPLIER
 import os
 import atexit
@@ -43,6 +44,21 @@ def create_app(config):
     app.config['CACHE_TTL'] = config.cache_ttl
     app.config['WORKER_ENABLED'] = config.worker_enabled
     app.config['WORKER_THREADS'] = config.worker_threads
+
+    # Initialize content manager (logging happens inside get_content_manager)
+    content_manager = get_content_manager(config.content_path)
+
+    # Make content available to all templates via context processor
+    @app.context_processor
+    def inject_content():
+        """Inject content into all templates."""
+        return {'content': content_manager.get_all()}
+
+    # Log content details after logger is configured
+    from py_home_gallery.utils.logger import get_logger
+    logger = get_logger(__name__)
+    content = content_manager.get_all()
+    logger.info(f"Content loaded - Site Title: '{content.get('site', {}).get('title', 'Unknown')}'")
     
     # Initialize cache with config TTL (metadata cache gets 2x TTL by default)
     if config.cache_enabled:
